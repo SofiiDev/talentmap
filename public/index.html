@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentMap — Plataforma de Desarrollo de Carrera</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231D6AE5'/><path d='M6 22L11 15l5 5 6-9 4 6' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F7F4;--bg2:#FFFFFF;--bg3:#F3F2EF;--bg4:#ECEAE5;--bg5:#E4E2DC;
+  --border:#E0DDD6;--border2:#D0CCC3;
+  --text:#1A1916;--text2:#4A4740;--text3:#9A968E;--text4:#C2BFB8;
+  --accent:#1D6AE5;--accent-bg:#EEF3FD;--accent-dark:#1355C0;
+  --teal:#0F8A74;--teal-bg:#E8F5F2;
+  --amber:#B45309;--amber-bg:#FEF3E2;
+  --red:#C0392B;--red-bg:#FDEEEC;
+  --green:#1A7A42;--green-bg:#E8F5EE;
+  --purple:#6B3FA0;--purple-bg:#F2EDF9;
+  --orange:#C2410C;--orange-bg:#FFF0E6;
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.06);
+  --shadow-md:0 2px 4px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.08);
+  --font:'Geist',sans-serif;--mono:'Geist Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--font);cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:var(--font);outline:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0)}
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:236px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+#content{flex:1;overflow-y:auto;padding:22px 26px;background:var(--bg)}
+.sidebar-brand{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.brand-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:-.4px}
+.brand-tag{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-group{padding:6px 8px 0}
+.nav-label{font-size:10px;font-weight:600;color:var(--text4);letter-spacing:.7px;text-transform:uppercase;padding:5px 8px 3px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:12.5px;transition:all .12s;margin-bottom:1px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent);font-weight:500}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;line-height:1.6}
+.nav-badge-green{background:var(--green)}
+.sidebar-footer{margin-top:auto;border-top:1px solid var(--border);padding:10px 8px;flex-shrink:0}
+.user-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--radius);cursor:pointer;transition:background .12s}
+.user-row:hover{background:var(--bg3)}
+.av-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.topbar-page{font-size:14px;font-weight:600;flex:1}
+.topbar-search{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;width:220px;transition:border-color .15s}
+.topbar-search:focus-within{border-color:var(--accent)}
+.topbar-search input{background:none;border:none;color:var(--text);font-size:12px;width:100%}
+.topbar-search input::placeholder{color:var(--text3)}
+.tb-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s;color:var(--text2);flex-shrink:0;font-size:12px}
+.tb-btn:hover{background:var(--bg4)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;white-space:nowrap;font-family:var(--font)}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+.btn-primary:hover{background:var(--accent-dark)}
+.btn-secondary{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg3)}
+.btn-ghost{background:transparent;color:var(--text3);border:1px solid transparent}
+.btn-ghost:hover{background:var(--bg3);color:var(--text2)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #F5C2BC}
+.btn-danger:hover{background:#FAD9D6}
+.btn-google{background:#fff;color:#3c4043;border:1px solid #dadce0;gap:7px}
+.btn-google:hover{background:#f8f9fa;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn-icon{width:30px;height:30px;padding:0;justify-content:center}
+.btn svg{width:12px;height:12px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow)}
+.card-sm{padding:12px 14px}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px}
+.card-title{font-size:13px;font-weight:600}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:26px;font-weight:700;letter-spacing:-1px;margin:5px 0 3px}
+.stat-meta{font-size:11px;color:var(--text3)}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;padding:9px 12px;text-align:left;border-bottom:1.5px solid var(--border);background:var(--bg3)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3)}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.b-blue{background:var(--accent-bg);color:var(--accent)}
+.b-green{background:var(--green-bg);color:var(--green)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.b-teal{background:var(--teal-bg);color:var(--teal)}
+.b-orange{background:var(--orange-bg);color:var(--orange)}
+.b-gray{background:var(--bg4);color:var(--text2)}
+.pbar{height:5px;background:var(--bg4);border-radius:20px;overflow:hidden}
+.pfill{height:100%;border-radius:20px;transition:width .5s}
+.p-blue{background:var(--accent)}.p-green{background:var(--green)}.p-amber{background:var(--amber)}.p-teal{background:var(--teal)}.p-red{background:var(--red)}
+.overlay{position:fixed;inset:0;background:rgba(26,25,22,.45);display:flex;align-items:center;justify-content:center;z-index:900;opacity:0;pointer-events:none;transition:opacity .18s;padding:16px}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);width:580px;max-width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--shadow-md);transform:translateY(12px) scale(.98);transition:transform .18s}
+.overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-wide{width:760px}.modal-xl{width:940px}.modal-full{width:1100px}
+.mhead{padding:16px 22px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mtitle{font-size:14px;font-weight:600}
+.mbody{padding:18px 22px;overflow-y:auto;flex:1}
+.mfoot{padding:12px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+.fg{margin-bottom:13px}
+.flbl{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.2px}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:12.5px;transition:border-color .12s;font-family:var(--font)}
+.fi:focus{border-color:var(--accent);background:var(--bg2)}
+.fi::placeholder{color:var(--text4)}
+select.fi option{background:var(--bg2)}
+textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.frow4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.ptitle{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.psub{font-size:12px;color:var(--text3);margin-top:3px}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:16px;gap:0;overflow-x:auto}
+.tab{padding:7px 14px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:color .12s,border-color .12s;white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:hover:not(.active){color:var(--text)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.gap{margin-bottom:18px}
+.divider{height:1px;background:var(--border);margin:13px 0}
+.chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:var(--bg4);border-radius:20px;font-size:11px;color:var(--text2)}
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-ico{font-size:30px;margin-bottom:8px}
+.empty-t{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.ml-a{margin-left:auto}
+.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.bar-lbl{font-size:12px;color:var(--text2);width:130px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;height:17px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:11px;font-weight:500;color:#fff;min-width:20px;transition:width .5s}
+.bar-val{font-size:11px;color:var(--text3);width:30px;text-align:right;flex-shrink:0}
+.emp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;cursor:pointer;transition:all .12s;box-shadow:var(--shadow)}
+.emp-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.emp-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+/* ONBOARDING */
+.ob-banner{background:linear-gradient(135deg,#EEF3FD,#F2EDF9);border:1px solid #C8D9FA;border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ob-dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ONBOARDING CRUD */
+.ob-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.ob-card-header{display:flex;align-items:center;padding:13px 15px;border-bottom:1px solid var(--border);gap:12px;background:var(--bg3)}
+.ob-card-body{padding:14px 15px}
+.ob-act-table{width:100%;border-collapse:collapse;font-size:12px}
+.ob-act-table th{background:var(--bg4);color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.ob-act-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ob-act-table tr:last-child td{border-bottom:none}
+.ob-act-table tbody tr:hover td{background:var(--bg3)}
+.ob-act-drag{cursor:grab;color:var(--text4);padding:0 5px;user-select:none}
+.ob-act-drag:active{cursor:grabbing}
+.ob-chk{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--border2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;background:var(--bg2);vertical-align:middle}
+.ob-chk.done{background:var(--green);border-color:var(--green)}
+.ob-cat-badge{display:inline-flex;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500}
+.cat-General{background:#F0F0F0;color:#555}
+.cat-Accesos{background:var(--accent-bg);color:var(--accent)}
+.cat-Documentación{background:var(--amber-bg);color:var(--amber)}
+.cat-Capacitación{background:var(--teal-bg);color:var(--teal)}
+.cat-Social{background:var(--green-bg);color:var(--green)}
+.cat-Técnico{background:var(--purple-bg);color:var(--purple)}
+.cat-Compliance{background:var(--red-bg);color:var(--red)}
+.ob-inline-edit{background:none;border:none;border-bottom:1px dashed var(--border2);padding:2px 4px;width:100%;font-size:12px;font-family:var(--font);color:var(--text);min-width:100px}
+.ob-inline-edit:focus{outline:none;border-bottom-color:var(--accent)}
+.template-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+/* TP CARD */
+.tp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:11px;box-shadow:var(--shadow);overflow:hidden}
+.tp-header{display:flex;align-items:center;padding:12px 15px;border-bottom:1px solid var(--border);gap:12px;background:var(--bg3)}
+.tp-body{padding:12px 15px}
+.act-row{display:flex;align-items:center;gap:9px;padding:8px 9px;background:var(--bg3);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:5px}
+.act-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;background:var(--bg2)}
+.act-chk.done{background:var(--green);border-color:var(--green)}
+/* PROFILE */
+.profile-layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:18px;box-shadow:var(--shadow)}
+/* RM */
+.rm-stack{display:flex;flex-direction:column;gap:11px}
+.rm-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.rm-card-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.rm-card-body{padding:13px 15px}
+.rm-phases{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:10px}
+.rm-phase{flex:1;border-right:1px solid var(--border);padding:8px;min-width:0}
+.rm-phase:last-child{border-right:none}
+.rm-phase-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:3px}
+.rm-phase-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm-item{font-size:10px;padding:2px 5px;border-radius:3px;margin-top:3px}
+.rm-item.done{background:var(--green-bg);color:var(--green)}
+.rm-item.act{background:var(--accent-bg);color:var(--accent)}
+.rm-item.pend{background:var(--bg4);color:var(--text3)}
+/* AI */
+.ai-banner{background:linear-gradient(135deg,#EEF3FD,#F2EDF9);border:1px solid #C8D9FA;border-radius:var(--radius-lg);padding:14px;margin-bottom:14px}
+.ai-title{font-size:12px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.spin{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* FILTER BAR */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.fi-sm{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 9px;color:var(--text);font-size:12px;font-family:var(--font);height:30px;transition:border-color .12s}
+.fi-sm:focus{border-color:var(--accent);background:var(--bg2);outline:none}
+/* KANBAN */
+.kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.k-col{min-width:225px;width:225px;flex-shrink:0}
+.k-col-head{display:flex;align-items:center;justify-content:space-between;padding:5px 4px 7px}
+.k-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.k-cnt{background:var(--bg4);border-radius:20px;padding:1px 7px;font-size:11px;color:var(--text3);font-weight:500}
+.k-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px;cursor:pointer;transition:all .12s;box-shadow:var(--shadow);margin-bottom:7px}
+.k-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
+/* SURVEY */
+.sv-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:9px;overflow:hidden}
+.sv-head{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid var(--border);background:var(--bg3);cursor:pointer}
+.sv-body{padding:13px}
+.sv-q{margin-bottom:10px}
+.sv-qlbl{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.sv-ans{font-size:12px;color:var(--text);background:var(--bg3);border-radius:var(--radius);padding:7px 10px;border-left:2px solid var(--accent)}
+/* GOOGLE BANNER */
+.google-banner{background:#fff;border:1px solid #dadce0;border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;border-radius:var(--radius-lg);padding:10px 15px;font-size:12px;font-weight:500;z-index:9999;transform:translateY(60px);opacity:0;transition:all .25s;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.t-ok .toast-dot{background:var(--green)}.t-err .toast-dot{background:var(--red)}.t-info .toast-dot{background:var(--accent)}
+/* AUTH */
+.auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:20px}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:36px 40px;text-align:center;box-shadow:var(--shadow-md);max-width:380px;width:100%}
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:8000;flex-direction:column;gap:10px}
+.loading-overlay.hidden{display:none}
+/* CAL */
+.cal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cal-month{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:120px;display:flex;flex-direction:column}
+.cal-month:nth-child(6n){border-right:none}
+.cal-month:nth-child(n+7){border-bottom:none}
+.cal-month-head{padding:8px 10px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.cal-month-body{padding:6px;flex:1;display:flex;flex-direction:column;gap:3px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:3px}
+@media print{
+  #sidebar,#topbar,.ph-actions,.btn,button{display:none!important}
+  #content{padding:0!important;overflow:visible!important}
+  .page{display:block!important}
+  body{background:#fff!important}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px">
+      <div class="brand-mark" style="width:38px;height:38px;border-radius:9px"><svg viewBox="0 0 14 14" fill="none" width="18" height="18"><path d="M2 10L5 6l2.5 2L10 4l2 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="3.5" r="1.5" fill="#fff" opacity=".5"/></svg></div>
+      <div><div style="font-size:18px;font-weight:700;letter-spacing:-.5px">TalentMap</div><div style="font-size:11px;color:var(--text3)">Plataforma de Desarrollo de Carrera</div></div>
+    </div>
+    <div id="auth-status" style="font-size:13px;color:var(--text2);margin-bottom:20px">Inicia sesión con tu cuenta Google para continuar</div>
+    <button class="btn btn-google" style="width:100%;justify-content:center;padding:10px 16px;font-size:13px" id="google-signin-btn" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z" fill="#EA4335"/><path d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z" fill="#4285F4"/><path d="M3.88 10.78A5.54 5.54 0 019 3.48c1.62 0 2.71.7 3.33 1.3l2.54-2.48C13.46.89 11.43 0 9 0c-3.52 0-6.56 2.02-8.04 4.96l2.91 2.26c.69-2.08 2.71-3.65 5.13-3.65z" fill="#FBBC05"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.96 13.04C2.44 15.98 5.48 18 9 18z" fill="#34A853"/></svg>
+      Continuar con Google
+    </button>
+    <div style="margin-top:14px;font-size:11px;color:var(--text4)">Al iniciar sesión aceptas los términos de servicio</div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spin" style="width:24px;height:24px;border-width:3px"></div>
+  <div style="font-size:13px;color:var(--text2)">Cargando TalentMap...</div>
+</div>
+
+<div id="app" style="display:none">
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark"><svg viewBox="0 0 14 14" fill="none" width="14" height="14"><path d="M2 10L5 6l2.5 2L10 4l2 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="3.5" r="1.5" fill="#fff" opacity=".5"/></svg></div>
+    <div><div class="brand-name">TalentMap</div><div class="brand-tag">Desarrollo de carrera</div></div>
+  </div>
+  <div class="nav-group"><div class="nav-label">Principal</div>
+    <div class="nav-item active" data-page="dashboard"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor" opacity=".4"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor" opacity=".4"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor" opacity=".4"/></svg>Dashboard</div>
+  </div>
+  <div class="nav-group"><div class="nav-label">Personas</div>
+    <div class="nav-item" data-page="employees"><svg viewBox="0 0 14 14" fill="none"><circle cx="5.5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 12c0-2.5 2-4.5 4.5-4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 12.5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Empleados <span class="nav-badge" id="nb-emp">0</span></div>
+    <div class="nav-item" data-page="onboarding"><svg viewBox="0 0 14 14" fill="none"><path d="M7 2L2 5v7h10V5L7 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M5 12V8h4v4" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Onboarding <span class="nav-badge nav-badge-green" id="nb-ob">0</span></div>
+    <div class="nav-item" data-page="surveys"><svg viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 5h5M4.5 7.5h5M4.5 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Encuestas 1:1 <span class="nav-badge" id="nb-sv">0</span></div>
+  </div>
+  <div class="nav-group"><div class="nav-label">Desarrollo</div>
+    <div class="nav-item" data-page="roadmaps"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Roadmaps</div>
+    <div class="nav-item" data-page="plans"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Planes asignados</div>
+  </div>
+  <div class="nav-group"><div class="nav-label">Análisis</div>
+    <div class="nav-item" data-page="metrics"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 10.5L4.5 7l2.5 2 3-4.5 2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Métricas</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row" id="user-row">
+      <div class="av-sm" style="background:var(--accent)" id="user-avatar">--</div>
+      <div><div style="font-size:12px;font-weight:500" id="user-name">Cargando...</div><div style="font-size:11px;color:var(--text3)" id="user-email"></div></div>
+      <button class="btn btn-ghost btn-xs ml-a" onclick="signOut()" title="Cerrar sesión">↗</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+  <header id="topbar">
+    <div class="topbar-page" id="topbar-title">Dashboard</div>
+    <div class="topbar-search"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="var(--text3)" stroke-width="1.4"/><path d="M9 9l2.5 2.5" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/></svg><input type="text" placeholder="Buscar empleado..." id="gsearch" oninput="globalSearch(this.value)"></div>
+    <div class="tb-btn" onclick="openModal('cfg-modal')">⚙</div>
+    <div class="tb-btn" onclick="showToast('Sin notificaciones pendientes','info')">🔔</div>
+  </header>
+  <main id="content">
+
+<!-- DASHBOARD -->
+<section class="page active" id="page-dashboard">
+  <div class="ph"><div><div class="ptitle">Bienvenido 👋</div><div class="psub" id="dash-sub">Panel de control — TalentMap</div></div>
+    <div class="ph-actions"><button class="btn btn-primary btn-sm" onclick="openModal('new-emp-modal')">+ Empleado</button></div>
+  </div>
+  <div class="stats-row" id="d-stats"></div>
+  <div class="g2 gap">
+    <div class="card"><div class="card-header"><div><div class="card-title">Distribución por área</div></div></div><div id="d-areas"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Actividad reciente</div></div></div><div id="d-activity" style="font-size:12px;color:var(--text2)"><div class="empty" style="padding:20px"><div class="empty-ico">📋</div><div>Sin actividad aún</div></div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-header"><div><div class="card-title">Nuevos ingresos</div><div class="card-sub">Onboarding activo</div></div><button class="btn btn-ghost btn-sm" onclick="showPage('onboarding')">Ver →</button></div><div id="d-onboarding"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Estado de onboardings</div></div></div><div id="d-ob-summary"></div></div>
+  </div>
+</section>
+
+<!-- EMPLOYEES -->
+<section class="page" id="page-employees">
+  <div class="ph"><div><div class="ptitle">Empleados</div><div class="psub" id="emp-page-sub"></div></div><button class="btn btn-primary" onclick="openModal('new-emp-modal')">+ Nuevo empleado</button></div>
+  <div class="filter-bar">
+    <input class="fi-sm" placeholder="Nombre, cargo..." id="ef-name" oninput="filterEmps()" style="width:160px">
+    <select class="fi-sm" id="ef-area" onchange="filterEmps()"><option value="">Todas las áreas</option></select>
+    <select class="fi-sm" id="ef-level" onchange="filterEmps()"><option value="">Todos los niveles</option><option>Junior</option><option>Mid</option><option>Senior</option><option>Lead</option><option>Manager</option><option>Director</option></select>
+    <select class="fi-sm" id="ef-site" onchange="filterEmps()"><option value="">Todas las plantas</option></select>
+    <span class="chip ml-a" id="ef-count"></span>
+  </div>
+  <div id="emp-grid" class="g3"></div>
+</section>
+
+<!-- PROFILE -->
+<section class="page" id="page-profile">
+  <div class="ph">
+    <div><button class="btn btn-ghost btn-sm" onclick="showPage('employees')" style="margin-bottom:6px">← Volver</button><div class="ptitle" id="prof-title">Perfil</div></div>
+    <div class="ph-actions">
+      <button class="btn btn-secondary btn-sm" onclick="openSurveyForCurrent()">+ Encuesta 1:1</button>
+      <button class="btn btn-primary btn-sm" id="ai-btn" onclick="runAI()">✦ Analizar con IA</button>
+    </div>
+  </div>
+  <div class="profile-layout" id="profile-content"></div>
+</section>
+
+<!-- ONBOARDING -->
+<section class="page" id="page-onboarding">
+  <div class="ph">
+    <div><div class="ptitle">Onboarding</div><div class="psub">Seguimiento de nuevos ingresos — Checklist con CRUD completo</div></div>
+    <div class="ph-actions">
+      <select class="fi-sm" id="ob-filter-status" onchange="renderOnboarding()"><option value="">Todos los estados</option><option>En proceso</option><option>Completado</option><option>Pendiente inicio</option></select>
+      <button class="btn btn-secondary btn-sm" onclick="openModal('ob-templates-modal')">📋 Templates</button>
+      <button class="btn btn-primary" onclick="openModal('new-ob-modal')">+ Nuevo onboarding</button>
+    </div>
+  </div>
+  <div id="ob-list"></div>
+</section>
+
+<!-- SURVEYS -->
+<section class="page" id="page-surveys">
+  <div class="ph"><div><div class="ptitle">Encuestas 1:1</div></div>
+    <div class="ph-actions">
+      <select class="fi-sm" id="sv-fe" onchange="filterSurveys()" style="width:200px"><option value="">Todos los empleados</option></select>
+      <button class="btn btn-primary" onclick="openModal('new-survey-modal')">+ Nueva encuesta</button>
+    </div>
+  </div>
+  <div id="surveys-list"></div>
+</section>
+
+<!-- ROADMAPS -->
+<section class="page" id="page-roadmaps">
+  <div class="ph"><div><div class="ptitle">Roadmaps de carrera</div></div>
+    <div class="ph-actions"><button class="btn btn-primary" onclick="openModal('new-rm-modal')">+ Nuevo roadmap</button></div>
+  </div>
+  <div id="rm-stack" class="rm-stack"></div>
+</section>
+
+<!-- PLANS -->
+<section class="page" id="page-plans">
+  <div class="ph"><div><div class="ptitle">Planes asignados</div></div><button class="btn btn-primary" onclick="openModal('assign-modal')">+ Asignar</button></div>
+  <div class="kanban" id="kanban"></div>
+</section>
+
+<!-- METRICS -->
+<section class="page" id="page-metrics">
+  <div class="ph"><div><div class="ptitle">Métricas</div></div></div>
+  <div id="metrics-content"></div>
+</section>
+
+  </main>
+</div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- NEW EMPLOYEE -->
+<div class="overlay" id="new-emp-modal"><div class="modal modal-wide">
+  <div class="mhead"><div class="mtitle">Nuevo empleado</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-emp-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow"><div class="fg"><label class="flbl">Nombre *</label><input class="fi" id="ne-name" placeholder="María"></div><div class="fg"><label class="flbl">Apellido *</label><input class="fi" id="ne-last" placeholder="García"></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Email</label><input class="fi" id="ne-email" type="email" placeholder="m.garcia@empresa.com"></div><div class="fg"><label class="flbl">Teléfono</label><input class="fi" id="ne-phone" placeholder="+54 11 0000-0000"></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Área *</label><select class="fi" id="ne-area"><option>Ciencia de Datos</option><option>Biotecnología</option><option>Farmacéutica</option><option>Tecnología</option><option>I+D</option><option>Regulatorio</option><option>Control de Calidad</option><option>Logística</option><option>Finanzas</option></select></div><div class="fg"><label class="flbl">Cargo *</label><input class="fi" id="ne-role" placeholder="Data Scientist Senior"></div></div>
+    <div class="frow3"><div class="fg"><label class="flbl">Nivel</label><select class="fi" id="ne-level"><option>Junior</option><option>Mid</option><option selected>Senior</option><option>Lead</option><option>Manager</option><option>Director</option></select></div><div class="fg"><label class="flbl">Planta</label><select class="fi" id="ne-site"><option>Buenos Aires</option><option>Madrid</option><option>México DF</option><option>São Paulo</option><option>Remoto</option></select></div><div class="fg"><label class="flbl">Sector</label><select class="fi" id="ne-sector"><option>Producción</option><option>I+D</option><option>IT</option><option>Operaciones</option><option>Finanzas</option></select></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fecha de ingreso</label><input class="fi" id="ne-date" type="date"></div><div class="fg"><label class="flbl">Formación académica</label><input class="fi" id="ne-edu" placeholder="Lic. Bioquímica — UBA"></div></div>
+    <div class="fg"><label class="flbl">Habilidades (coma separadas)</label><input class="fi" id="ne-skills" placeholder="Python, ML, R..."></div>
+    <div class="fg"><label class="flbl">¿Es nuevo ingreso? (activa onboarding automático)</label><select class="fi" id="ne-new"><option value="0">No</option><option value="1">Sí — activar onboarding</option></select></div>
+    <div id="ne-template-row" style="display:none" class="fg"><label class="flbl">Template de onboarding</label><select class="fi" id="ne-template"><option value="">Sin template (crear vacío)</option></select></div>
+    <div class="fg"><label class="flbl">Notas</label><textarea class="fi" id="ne-notes" style="min-height:55px"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-emp-modal')">Cancelar</button><button class="btn btn-primary" id="ne-save-btn" onclick="saveEmployee()">Guardar</button></div>
+</div></div>
+
+<!-- NEW SURVEY -->
+<div class="overlay" id="new-survey-modal"><div class="modal modal-wide">
+  <div class="mhead"><div><div class="mtitle">Nueva encuesta 1:1</div></div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-survey-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow"><div class="fg"><label class="flbl">Empleado *</label><select class="fi" id="sv-emp"></select></div><div class="fg"><label class="flbl">Supervisor</label><input class="fi" id="sv-sup" placeholder="Nombre del superior"></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fecha</label><input class="fi" id="sv-date" type="date"></div><div class="fg"><label class="flbl">Tipo</label><select class="fi" id="sv-type"><option>Check-in mensual</option><option>One-to-one trimestral</option><option>One-to-one anual</option><option>Revisión de carrera</option><option>Evaluación de desempeño</option></select></div></div>
+    <div class="divider"></div>
+    <div class="fg"><label class="flbl">¿Qué aspectos disfrutas más de tu trabajo?</label><textarea class="fi" id="sv-q1"></textarea></div>
+    <div class="fg"><label class="flbl">¿Cuáles son tus objetivos de carrera para los próximos 1-2 años?</label><textarea class="fi" id="sv-q2"></textarea></div>
+    <div class="fg"><label class="flbl">¿Qué habilidades quieres desarrollar?</label><textarea class="fi" id="sv-q3"></textarea></div>
+    <div class="fg"><label class="flbl">¿Qué obstáculos encuentras?</label><textarea class="fi" id="sv-q4"></textarea></div>
+    <div class="fg"><label class="flbl">Motivación actual (1-10)</label><select class="fi" id="sv-q5"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+    <div class="fg"><label class="flbl">¿Dónde te ves en 3-5 años?</label><textarea class="fi" id="sv-q6"></textarea></div>
+    <div class="fg"><label class="flbl">Comentarios del supervisor</label><textarea class="fi" id="sv-notes"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-survey-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveSurvey()">Guardar encuesta</button></div>
+</div></div>
+
+<!-- NEW ONBOARDING -->
+<div class="overlay" id="new-ob-modal"><div class="modal modal-wide">
+  <div class="mhead"><div class="mtitle">Nuevo plan de onboarding</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-ob-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label class="flbl">Empleado *</label><select class="fi" id="ob-emp"></select></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fecha de ingreso</label><input class="fi" id="ob-start" type="date"></div><div class="fg"><label class="flbl">Duración</label><select class="fi" id="ob-dur"><option>30 días</option><option selected>60 días</option><option>90 días</option><option>180 días</option></select></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Mentor asignado</label><input class="fi" id="ob-mentor" placeholder="Nombre del mentor"></div><div class="fg"><label class="flbl">Planta</label><select class="fi" id="ob-site"><option>Buenos Aires</option><option>Madrid</option><option>México DF</option><option>São Paulo</option><option>Remoto</option></select></div></div>
+    <div class="fg"><label class="flbl">Template de actividades</label><select class="fi" id="ob-template"><option value="">Sin template (empezar vacío)</option></select></div>
+    <div class="fg"><label class="flbl">Notas</label><textarea class="fi" id="ob-notes" style="min-height:50px"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-ob-modal')">Cancelar</button><button class="btn btn-primary" id="ob-save-btn" onclick="saveOnboarding()">Crear onboarding</button></div>
+</div></div>
+
+<!-- EDIT ONBOARDING ACTIVITY -->
+<div class="overlay" id="edit-ob-act-modal"><div class="modal">
+  <div class="mhead"><div class="mtitle" id="edit-act-title">Editar actividad</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('edit-ob-act-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label class="flbl">Nombre de la actividad *</label><input class="fi" id="ea-name" placeholder="Nombre de la actividad"></div>
+    <div class="fg"><label class="flbl">Descripción</label><textarea class="fi" id="ea-desc" style="min-height:60px"></textarea></div>
+    <div class="frow"><div class="fg"><label class="flbl">Categoría</label><select class="fi" id="ea-cat"><option>General</option><option>Accesos</option><option>Documentación</option><option>Capacitación</option><option>Social</option><option>Técnico</option><option>Compliance</option></select></div><div class="fg"><label class="flbl">Responsable</label><input class="fi" id="ea-resp" placeholder="RRHH, IT, Supervisor..."></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fecha límite</label><input class="fi" id="ea-due" type="date"></div><div class="fg"><label class="flbl">Notas internas</label><input class="fi" id="ea-notes" placeholder="Notas opcionales"></div></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-danger btn-sm" id="ea-delete-btn">Eliminar</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-secondary" onclick="closeModal('edit-ob-act-modal')">Cancelar</button>
+    <button class="btn btn-primary" id="ea-save-btn">Guardar</button>
+  </div>
+</div></div>
+
+<!-- ONBOARDING TEMPLATES -->
+<div class="overlay" id="ob-templates-modal"><div class="modal modal-wide">
+  <div class="mhead"><div><div class="mtitle">Templates de Onboarding</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Reutiliza checklists predefinidos para agilizar la creación</div></div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('ob-templates-modal')">✕</button></div>
+  <div class="mbody">
+    <div id="templates-list" style="margin-bottom:16px"></div>
+    <div class="divider"></div>
+    <div style="font-size:12px;font-weight:600;margin-bottom:10px">Crear nuevo template</div>
+    <div class="frow"><div class="fg"><label class="flbl">Nombre del template</label><input class="fi" id="tmpl-name" placeholder="Onboarding Técnico"></div><div class="fg"><label class="flbl">Área (opcional)</label><input class="fi" id="tmpl-area" placeholder="Tecnología, I+D..."></div></div>
+    <div class="fg"><label class="flbl">Actividades (una por línea)</label><textarea class="fi" id="tmpl-acts" placeholder="Presentación al equipo&#10;Configuración de accesos&#10;Tour instalaciones&#10;Lectura de políticas" style="min-height:100px"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('ob-templates-modal')">Cerrar</button><button class="btn btn-primary" onclick="saveTemplate()">Crear template</button></div>
+</div></div>
+
+<!-- NEW ROADMAP -->
+<div class="overlay" id="new-rm-modal"><div class="modal modal-wide">
+  <div class="mhead"><div class="mtitle">Nuevo roadmap</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-rm-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow"><div class="fg"><label class="flbl">Nombre *</label><input class="fi" id="rm-name" placeholder="Data Scientist: Junior → Senior"></div><div class="fg"><label class="flbl">Área</label><select class="fi" id="rm-area"><option>Ciencia de Datos</option><option>Biotecnología</option><option>Tecnología</option><option>I+D</option><option>Finanzas</option></select></div></div>
+    <div class="fg"><label class="flbl">Descripción</label><textarea class="fi" id="rm-desc"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-rm-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveRM()">Crear</button></div>
+</div></div>
+
+<!-- ASSIGN PLAN -->
+<div class="overlay" id="assign-modal"><div class="modal">
+  <div class="mhead"><div class="mtitle">Asignar roadmap</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('assign-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label class="flbl">Empleado</label><select class="fi" id="ap-emp"></select></div>
+    <div class="fg"><label class="flbl">Roadmap</label><select class="fi" id="ap-rm"></select></div>
+    <div class="frow"><div class="fg"><label class="flbl">Inicio</label><input class="fi" id="ap-start" type="date"></div><div class="fg"><label class="flbl">Fecha objetivo *</label><input class="fi" id="ap-end" type="date"></div></div>
+    <div class="fg"><label class="flbl">Prioridad</label><select class="fi" id="ap-pri"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('assign-modal')">Cancelar</button><button class="btn btn-primary" onclick="savePlan()">Asignar</button></div>
+</div></div>
+
+<!-- CONFIG -->
+<div class="overlay" id="cfg-modal"><div class="modal">
+  <div class="mhead"><div class="mtitle">Configuración</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('cfg-modal')">✕</button></div>
+  <div class="mbody">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Sesión activa: <strong id="cfg-email">—</strong></div>
+    <div class="fg"><label class="flbl">Organización</label><input class="fi" value="BioTech Solutions S.A." id="cfg-org"></div>
+    <div class="divider"></div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Conexión Supabase</div>
+    <div id="cfg-supabase-status" style="font-size:12px;color:var(--green)">✓ Conectado</div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('cfg-modal')">Cerrar</button><button class="btn btn-primary" onclick="closeModal('cfg-modal');showToast('Guardado','ok')">Guardar</button></div>
+</div></div>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// SUPABASE INIT
+// ═══════════════════════════════════════════════════
+const SUPABASE_URL = window.__ENV_SUPABASE_URL__ || ''
+const SUPABASE_ANON = window.__ENV_SUPABASE_ANON__ || ''
+
+let supabase = null
+try {
+  if (SUPABASE_URL && SUPABASE_ANON) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+  }
+} catch(e) { console.warn('Supabase not configured:', e) }
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+let currentUser = null
+
+async function checkAuth() {
+  showLoading(true)
+  if (!supabase) {
+    // Modo demo sin Supabase
+    document.getElementById('auth-screen').style.display = 'none'
+    document.getElementById('app').style.display = 'flex'
+    document.getElementById('user-name').textContent = 'Demo User'
+    document.getElementById('user-email').textContent = 'demo@talentmap.com'
+    document.getElementById('user-avatar').textContent = 'DU'
+    showLoading(false)
+    await loadAllData()
+    return
+  }
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    currentUser = session.user
+    showApp()
+    await loadAllData()
+  } else {
+    showAuthScreen()
+  }
+  showLoading(false)
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user
+      showApp()
+      showLoading(true)
+      await loadAllData()
+      showLoading(false)
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null
+      showAuthScreen()
+    }
+  })
+}
+
+async function signInWithGoogle() {
+  if (!supabase) { showToast('Configura Supabase primero','err'); return }
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
+      scopes: 'openid email profile'
+    }
+  })
+}
+
+async function signOut() {
+  if (supabase) await supabase.auth.signOut()
+  else { showAuthScreen() }
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none'
+  document.getElementById('app').style.display = 'flex'
+  if (currentUser) {
+    const name = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Usuario'
+    const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)
+    document.getElementById('user-name').textContent = name
+    document.getElementById('user-email').textContent = currentUser.email || ''
+    document.getElementById('user-avatar').textContent = initials
+    document.getElementById('cfg-email').textContent = currentUser.email || ''
+  }
+}
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex'
+  document.getElementById('app').style.display = 'none'
+}
+
+function showLoading(v) {
+  document.getElementById('loading-overlay').className = v ? 'loading-overlay' : 'loading-overlay hidden'
+}
+
+// ═══════════════════════════════════════════════════
+// STATE (local cache + Supabase sync)
+// ═══════════════════════════════════════════════════
+const S = {
+  employees: [], onboardings: [], surveys: [], roadmaps: [],
+  plans: [], templates: [], currentEmpId: null
+}
+
+const COLORS = ['#1D6AE5','#0F8A74','#6B3FA0','#C0392B','#1A7A42','#B45309','#0891B2','#059669','#7C3AED','#C2410C']
+const ini = e => ((e.name||'')[0]+(e.lastname||'')[0]).toUpperCase()
+const LVL_B = {Junior:'b-green',Mid:'b-blue',Senior:'b-amber',Lead:'b-purple',Manager:'b-teal',Director:'b-red'}
+
+// ═══════════════════════════════════════════════════
+// LOAD DATA FROM SUPABASE
+// ═══════════════════════════════════════════════════
+async function loadAllData() {
+  if (!supabase) {
+    seedDemoData()
+    initUI()
+    return
+  }
+  try {
+    const [emps, obs, svs, rms, plans, tmpls] = await Promise.all([
+      supabase.from('employees').select('*').order('created_at'),
+      supabase.from('onboardings').select('*, onboarding_activities(*), employees(id,name,lastname,role,color)').order('created_at'),
+      supabase.from('surveys').select('*, employees(name,lastname,color)').order('date', {ascending: false}),
+      supabase.from('roadmaps').select('*').order('created_at'),
+      supabase.from('plans').select('*, employees(name,lastname), roadmaps(name)').order('created_at'),
+      supabase.from('onboarding_templates').select('*, onboarding_template_activities(*)').order('created_at')
+    ])
+    S.employees = emps.data || []
+    S.onboardings = (obs.data || []).map(ob => ({
+      ...ob, activities: (ob.onboarding_activities || []).sort((a,b) => a.order_index - b.order_index)
+    }))
+    S.surveys = svs.data || []
+    S.roadmaps = rms.data || []
+    S.plans = plans.data || []
+    S.templates = tmpls.data || []
+    initUI()
+  } catch(e) {
+    console.error('Load error:', e)
+    showToast('Error cargando datos', 'err')
+    seedDemoData()
+    initUI()
+  }
+}
+
+function initUI() {
+  updateCounters()
+  renderDashboard()
+  filterEmps()
+  renderOnboarding()
+  filterSurveys()
+  renderRoadmaps()
+  renderPlans()
+  populateFilters()
+  populateTemplateSelects()
+}
+
+// ═══════════════════════════════════════════════════
+// DEMO DATA (cuando no hay Supabase)
+// ═══════════════════════════════════════════════════
+function seedDemoData() {
+  const areas = ['Tecnología','I+D','Biotecnología','Finanzas','Regulatorio']
+  const names = [['Laura','Martínez'],['Carlos','García'],['Sofía','López'],['Diego','Fernández'],['Ana','Rodríguez'],['Tomás','Pérez']]
+  S.employees = names.map((n,i) => ({
+    id: 'demo-'+i, name: n[0], lastname: n[1],
+    email: n[0].toLowerCase()+'.'+n[1].toLowerCase()+'@empresa.com',
+    area: areas[i%areas.length], role: ['Analyst','Engineer','Manager','Director','Lead'][i%5],
+    level: ['Junior','Mid','Senior','Lead','Manager'][i%5],
+    site: 'Buenos Aires', sector: 'IT', color: COLORS[i%COLORS.length],
+    date: new Date(2024, i%12, 1).toISOString().split('T')[0],
+    skills: ['Python','SQL','Excel'].slice(0,i%3+1), notes: '', is_new: i>=4
+  }))
+  S.employees.filter(e=>e.is_new).forEach((e,i) => {
+    S.onboardings.push({
+      id: 'ob-'+i, employee_id: e.id, start_date: e.date, duration: '90 días',
+      mentor: 'RRHH Team', site: e.site, status: 'En proceso', progress: i*20,
+      notes: '', employees: e,
+      activities: [
+        {id:'a1-'+i, onboarding_id:'ob-'+i, name:'Presentación al equipo', category:'Social', responsible:'RRHH', done: false, order_index: 0},
+        {id:'a2-'+i, onboarding_id:'ob-'+i, name:'Configuración de accesos', category:'Accesos', responsible:'IT', done: false, order_index: 1},
+        {id:'a3-'+i, onboarding_id:'ob-'+i, name:'Lectura de políticas', category:'Compliance', responsible:'RRHH', done: false, order_index: 2},
+        {id:'a4-'+i, onboarding_id:'ob-'+i, name:'Reunión con supervisor', category:'General', responsible:'Supervisor', done: false, order_index: 3},
+      ]
+    })
+  })
+  S.templates = [
+    {id:'t1', name:'Onboarding General', area: null, is_default: true,
+      onboarding_template_activities: [
+        {id:'ta1', name:'Presentación al equipo', category:'Social', responsible:'RRHH', day_offset:1, order_index:0},
+        {id:'ta2', name:'Configuración de accesos', category:'Accesos', responsible:'IT', day_offset:1, order_index:1},
+        {id:'ta3', name:'Lectura de políticas', category:'Compliance', responsible:'RRHH', day_offset:2, order_index:2},
+        {id:'ta4', name:'Reunión con supervisor', category:'General', responsible:'Supervisor', day_offset:3, order_index:3},
+        {id:'ta5', name:'Tour instalaciones', category:'Social', responsible:'RRHH', day_offset:1, order_index:4},
+      ]
+    }
+  ]
+}
+
+// ═══════════════════════════════════════════════════
+// EMPLOYEES
+// ═══════════════════════════════════════════════════
+async function saveEmployee() {
+  const name = document.getElementById('ne-name').value.trim()
+  const last = document.getElementById('ne-last').value.trim()
+  if(!name||!last){showToast('Nombre y apellido obligatorios','err');return}
+  
+  const btn = document.getElementById('ne-save-btn')
+  btn.disabled = true; btn.textContent = 'Guardando...'
+
+  const emp = {
+    name, lastname: last,
+    email: document.getElementById('ne-email').value,
+    phone: document.getElementById('ne-phone').value,
+    area: document.getElementById('ne-area').value,
+    role: document.getElementById('ne-role').value || 'Sin cargo',
+    level: document.getElementById('ne-level').value,
+    site: document.getElementById('ne-site').value,
+    sector: document.getElementById('ne-sector').value,
+    date: document.getElementById('ne-date').value,
+    edu: document.getElementById('ne-edu').value,
+    skills: document.getElementById('ne-skills').value.split(',').map(s=>s.trim()).filter(Boolean),
+    notes: document.getElementById('ne-notes').value,
+    color: COLORS[S.employees.length % COLORS.length],
+    is_new: document.getElementById('ne-new').value === '1'
+  }
+
+  let newEmp
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('employees').insert([emp]).select().single()
+      if (error) throw error
+      newEmp = data
+      S.employees.push(newEmp)
+
+      // Si es nuevo ingreso, crear onboarding
+      if (emp.is_new) {
+        const templateId = document.getElementById('ne-template')?.value
+        await createOnboardingForEmployee(newEmp.id, newEmp.date, newEmp.site, templateId)
+      }
+    } catch(e) {
+      showToast('Error al guardar: '+e.message, 'err')
+      btn.disabled = false; btn.textContent = 'Guardar'
+      return
+    }
+  } else {
+    newEmp = { ...emp, id: 'local-'+Date.now() }
+    S.employees.push(newEmp)
+    if (emp.is_new) await createOnboardingForEmployee(newEmp.id, newEmp.date, newEmp.site, '')
+  }
+
+  closeModal('new-emp-modal')
+  showToast(`${name} ${last} añadido${emp.is_new?' — onboarding iniciado':''}`, 'ok')
+  updateCounters(); filterEmps()
+  btn.disabled = false; btn.textContent = 'Guardar'
+}
+
+async function createOnboardingForEmployee(empId, startDate, site, templateId) {
+  const ob = { employee_id: empId, start_date: startDate, duration: '90 días', mentor: 'RRHH', site, status: 'En proceso', progress: 0 }
+  let newOb
+  if (supabase) {
+    const { data } = await supabase.from('onboardings').insert([ob]).select().single()
+    newOb = { ...data, activities: [], employees: S.employees.find(e=>e.id===empId) }
+    // Aplicar template si se seleccionó
+    if (templateId) {
+      const tmpl = S.templates.find(t=>t.id===templateId)
+      if (tmpl?.onboarding_template_activities?.length) {
+        const start = new Date(startDate)
+        const acts = tmpl.onboarding_template_activities.map((a,i) => {
+          const due = new Date(start)
+          due.setDate(due.getDate() + (a.day_offset||0))
+          return { onboarding_id: newOb.id, name: a.name, description: a.description, category: a.category, responsible: a.responsible, due_date: due.toISOString().split('T')[0], order_index: i, done: false }
+        })
+        const { data: actsData } = await supabase.from('onboarding_activities').insert(acts).select()
+        newOb.activities = actsData || []
+      }
+    } else {
+      const defaultActs = [
+        { onboarding_id: newOb.id, name: 'Presentación al equipo', category: 'Social', responsible: 'RRHH', order_index: 0, done: false },
+        { onboarding_id: newOb.id, name: 'Configuración de accesos', category: 'Accesos', responsible: 'IT', order_index: 1, done: false },
+        { onboarding_id: newOb.id, name: 'Lectura de políticas', category: 'Compliance', responsible: 'RRHH', order_index: 2, done: false },
+        { onboarding_id: newOb.id, name: 'Reunión con supervisor', category: 'General', responsible: 'Supervisor', order_index: 3, done: false },
+      ]
+      const { data: actsData } = await supabase.from('onboarding_activities').insert(defaultActs).select()
+      newOb.activities = actsData || []
+    }
+  } else {
+    newOb = { ...ob, id: 'ob-'+Date.now(), activities: [
+      {id:'a'+Date.now(), onboarding_id:'ob-'+Date.now(), name:'Presentación al equipo', category:'Social', responsible:'RRHH', done:false, order_index:0},
+      {id:'b'+Date.now(), onboarding_id:'ob-'+Date.now(), name:'Configuración de accesos', category:'Accesos', responsible:'IT', done:false, order_index:1},
+    ], employees: S.employees.find(e=>e.id===empId) }
+  }
+  S.onboardings.push(newOb)
+  updateCounters()
+}
+
+async function deleteEmployee(id) {
+  if(!confirm('¿Eliminar empleado y todos sus datos?')) return
+  if (supabase) {
+    await supabase.from('employees').delete().eq('id', id)
+  }
+  S.employees = S.employees.filter(e=>e.id!==id)
+  S.onboardings = S.onboardings.filter(o=>o.employee_id!==id)
+  S.surveys = S.surveys.filter(s=>s.employee_id!==id)
+  showToast('Empleado eliminado','ok')
+  showPage('employees'); updateCounters()
+}
+
+function filterEmps() {
+  const q = document.getElementById('ef-name').value.toLowerCase()
+  const area = document.getElementById('ef-area').value
+  const level = document.getElementById('ef-level').value
+  const site = document.getElementById('ef-site').value
+  let emps = S.employees.filter(e => {
+    const match = !q || (e.name+' '+e.lastname+' '+(e.role||'')).toLowerCase().includes(q)
+    return match && (!area||e.area===area) && (!level||e.level===level) && (!site||e.site===site)
+  })
+  document.getElementById('ef-count').textContent = emps.length+' empleados'
+  const grid = document.getElementById('emp-grid')
+  if(!emps.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">👥</div><div class="empty-t">Sin resultados</div></div>'; return }
+  grid.innerHTML = emps.map(e => `<div class="emp-card" onclick="openProfile('${e.id}')">
+    <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
+      <div class="emp-av" style="background:${e.color}">${ini(e)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name} ${e.lastname}</div>
+        <div style="font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.role||'Sin cargo'}</div>
+      </div>
+      <span class="badge ${LVL_B[e.level]||'b-gray'}" style="flex-shrink:0">${e.level||''}</span>
+    </div>
+    <div style="font-size:11px;color:var(--text3);display:flex;gap:6px;flex-wrap:wrap">
+      <span>🏢 ${e.area||'—'}</span><span>📍 ${e.site||'—'}</span>
+    </div>
+  </div>`).join('')
+}
+
+function openProfile(id) {
+  S.currentEmpId = id
+  renderProfile(id)
+  showPage('profile')
+}
+
+function renderProfile(id) {
+  const e = S.employees.find(x=>x.id===id)
+  if (!e) return
+  document.getElementById('prof-title').textContent = e.name+' '+e.lastname
+  const ob = S.onboardings.find(o=>o.employee_id===id)
+  const svs = S.surveys.filter(s=>s.employee_id===id)
+  document.getElementById('profile-content').innerHTML = `
+    <div class="profile-card">
+      <div style="text-align:center;margin-bottom:14px">
+        <div class="emp-av" style="background:${e.color};width:56px;height:56px;font-size:18px;margin:0 auto 8px">${ini(e)}</div>
+        <div style="font-size:15px;font-weight:700">${e.name} ${e.lastname}</div>
+        <div style="font-size:12px;color:var(--text3)">${e.role||'Sin cargo'}</div>
+        <div style="margin-top:6px;display:flex;gap:5px;justify-content:center;flex-wrap:wrap">
+          <span class="badge ${LVL_B[e.level]||'b-gray'}">${e.level||''}</span>
+          <span class="badge b-gray">${e.area||''}</span>
+        </div>
+      </div>
+      ${ob?`<div class="ob-banner" style="margin-top:12px"><div class="ob-dot"></div><div><div style="font-size:12px;font-weight:600;color:var(--green)">En onboarding</div><div style="font-size:11px;color:var(--text2)">${ob.progress}% completado</div></div><button class="btn btn-ghost btn-xs ml-a" onclick="showPage('onboarding')">Ver →</button></div>`:''}
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+        ${[['Email',`<span style="color:var(--accent);font-size:11px">${e.email||'—'}</span>`],['Planta',e.site||'—'],['Sector',e.sector||'—'],['Ingreso',e.date||'—'],['Formación',e.edu||'—']].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px"><span style="color:var(--text3)">${k}</span><span style="font-weight:500;text-align:right;max-width:160px">${v}</span></div>`).join('')}
+      </div>
+      ${(e.skills||[]).length?`<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:5px">Habilidades</div><div style="display:flex;flex-wrap:wrap;gap:3px">${e.skills.map(s=>`<span class="chip">${s}</span>`).join('')}</div></div>`:''}
+      <div style="margin-top:12px"><button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="deleteEmployee('${id}')">🗑 Eliminar empleado</button></div>
+    </div>
+    <div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;margin-bottom:10px">Encuestas 1:1 (${svs.length})</div>
+        ${svs.length?svs.slice(0,3).map(sv=>`<div style="padding:8px;background:var(--bg3);border-radius:var(--radius);margin-bottom:5px;font-size:12px"><div style="font-weight:500">${sv.type} — ${sv.date}</div><div style="color:var(--text3);margin-top:2px">${sv.supervisor||''}</div></div>`).join(''):`<div class="empty" style="padding:16px"><div class="empty-ico" style="font-size:20px">💬</div><div>Sin encuestas</div><button class="btn btn-primary btn-xs" style="margin-top:6px" onclick="openSurveyForCurrent()">Nueva encuesta</button></div>`}
+        ${svs.length>3?`<button class="btn btn-ghost btn-xs" onclick="showPage('surveys')">Ver todas (${svs.length}) →</button>`:''}
+      </div>
+    </div>`
+}
+
+// ═══════════════════════════════════════════════════
+// ONBOARDING — CRUD COMPLETO
+// ═══════════════════════════════════════════════════
+function renderOnboarding() {
+  const filter = document.getElementById('ob-filter-status')?.value || ''
+  let obs = S.onboardings.filter(o => !filter || o.status === filter)
+  const list = document.getElementById('ob-list')
+  if(!obs.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-ico">🏠</div><div class="empty-t">Sin onboardings</div><div style="font-size:12px">Añade un nuevo empleado con la opción "Es nuevo ingreso" o crea un onboarding manual</div></div>'
+    return
+  }
+  list.innerHTML = obs.map(ob => renderOBCard(ob)).join('')
+}
+
+function renderOBCard(ob) {
+  const e = ob.employees || S.employees.find(x=>x.id===ob.employee_id) || {}
+  const acts = ob.activities || []
+  const done = acts.filter(a=>a.done).length
+  const total = acts.length
+  const pct = total ? Math.round(done/total*100) : 0
+  const statusColor = ob.status==='Completado'?'b-green':ob.status==='En proceso'?'b-blue':'b-gray'
+  
+  return `<div class="ob-card" id="obc-${ob.id}">
+    <div class="ob-card-header">
+      <div class="ob-dot" style="${ob.status==='Completado'?'background:var(--green);animation:none':''}"></div>
+      ${e.name?`<div class="emp-av" style="background:${e.color||'#1D6AE5'};width:34px;height:34px;font-size:12px">${ini(e)}</div>`:''}
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${e.name||'?'} ${e.lastname||''} <span style="font-weight:400;color:var(--text3)">— Onboarding</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
+          <span>${e.role||''}</span>
+          <span class="badge ${statusColor}" style="padding:1px 6px">${ob.status}</span>
+          <span>📍 ${ob.site||'—'}</span>
+          <span>👤 ${ob.mentor||'—'}</span>
+          <span>Inicio: ${ob.start_date||ob.start||'—'}</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:20px;font-weight:700;color:${pct===100?'var(--green)':'var(--text)'}">${pct}%</div>
+        <div style="font-size:11px;color:var(--text3)">${done}/${total} tareas</div>
+      </div>
+    </div>
+    <div class="ob-card-body">
+      <div class="pbar" style="margin-bottom:12px"><div class="pfill ${pct===100?'p-green':pct>50?'p-teal':'p-blue'}" style="width:${pct}%"></div></div>
+      
+      <!-- CHECKLIST TABLE con CRUD -->
+      ${total===0?`<div class="empty" style="padding:16px;border:1px dashed var(--border);border-radius:var(--radius);margin-bottom:10px"><div class="empty-ico" style="font-size:20px">📋</div><div>Sin actividades. Agrega la primera.</div></div>`:`
+      <div style="overflow-x:auto;margin-bottom:10px">
+        <table class="ob-act-table">
+          <thead>
+            <tr>
+              <th style="width:30px"></th>
+              <th style="width:28px"></th>
+              <th>Actividad</th>
+              <th style="width:90px">Categoría</th>
+              <th style="width:90px">Responsable</th>
+              <th style="width:90px">Fecha límite</th>
+              <th style="width:90px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="ob-acts-${ob.id}">
+            ${acts.map(a => renderActivityRow(a, ob.id)).join('')}
+          </tbody>
+        </table>
+      </div>`}
+      
+      <!-- Actions bar -->
+      <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-xs" onclick="addActivityInline('${ob.id}')">+ Agregar tarea</button>
+        <button class="btn btn-ghost btn-xs" onclick="applyTemplateToOB('${ob.id}')">📋 Aplicar template</button>
+        <button class="btn btn-ghost btn-xs" onclick="editOnboarding('${ob.id}')">✏ Editar info</button>
+        <div class="ml-a" style="display:flex;gap:5px">
+          ${ob.status!=='Completado'?`<button class="btn btn-secondary btn-xs" onclick="markOBComplete('${ob.id}')">✓ Marcar completo</button>`:''}
+          <button class="btn btn-danger btn-xs" onclick="deleteOB('${ob.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+  </div>`
+}
+
+function renderActivityRow(a, obId) {
+  const catClass = 'cat-'+(a.category||'General').replace(/\s/g,'')
+  return `<tr id="obact-${a.id}">
+    <td><span class="ob-act-drag" title="Reordenar">⠿</span></td>
+    <td>
+      <div class="ob-chk ${a.done?'done':''}" onclick="toggleOBActivity('${a.id}','${obId}',${!a.done})" title="${a.done?'Marcar pendiente':'Marcar completo'}">
+        ${a.done?'<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </div>
+    </td>
+    <td>
+      <div style="${a.done?'text-decoration:line-through;color:var(--text3)':''}">
+        <div style="font-size:12px;font-weight:500">${escH(a.name)}</div>
+        ${a.description?`<div style="font-size:11px;color:var(--text3)">${escH(a.description)}</div>`:''}
+      </div>
+    </td>
+    <td><span class="ob-cat-badge ${catClass}">${a.category||'General'}</span></td>
+    <td style="font-size:11px;color:var(--text2)">${escH(a.responsible||'—')}</td>
+    <td style="font-size:11px;color:${a.due_date&&!a.done&&new Date(a.due_date)<new Date()?'var(--red)':'var(--text3)'}">${a.due_date||'—'}</td>
+    <td>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-ghost btn-xs btn-icon" onclick="openEditActivity('${a.id}','${obId}')" title="Editar">✏</button>
+        <button class="btn btn-danger btn-xs btn-icon" onclick="deleteActivity('${a.id}','${obId}')" title="Eliminar">✕</button>
+      </div>
+    </td>
+  </tr>`
+}
+
+async function toggleOBActivity(actId, obId, newDone) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  const act = ob.activities.find(a=>a.id===actId)
+  if (!act) return
+  act.done = newDone
+  act.done_date = newDone ? new Date().toISOString().split('T')[0] : null
+
+  // Recalcular progreso
+  const total = ob.activities.length
+  const done = ob.activities.filter(a=>a.done).length
+  ob.progress = total ? Math.round(done/total*100) : 0
+  if (ob.progress === 100) ob.status = 'Completado'
+
+  if (supabase) {
+    await supabase.from('onboarding_activities').update({done: newDone, done_date: act.done_date}).eq('id', actId)
+    // El trigger en Supabase actualiza el progreso del onboarding automáticamente
+  }
+  renderOnboarding(); updateCounters()
+}
+
+function openEditActivity(actId, obId) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  const act = ob?.activities.find(a=>a.id===actId)
+  if (!act) return
+  document.getElementById('edit-act-title').textContent = 'Editar actividad'
+  document.getElementById('ea-name').value = act.name || ''
+  document.getElementById('ea-desc').value = act.description || ''
+  document.getElementById('ea-cat').value = act.category || 'General'
+  document.getElementById('ea-resp').value = act.responsible || ''
+  document.getElementById('ea-due').value = act.due_date || ''
+  document.getElementById('ea-notes').value = act.notes || ''
+  document.getElementById('ea-save-btn').onclick = () => saveEditActivity(actId, obId)
+  document.getElementById('ea-delete-btn').onclick = () => { closeModal('edit-ob-act-modal'); deleteActivity(actId, obId) }
+  openModal('edit-ob-act-modal')
+}
+
+async function saveEditActivity(actId, obId) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  const act = ob?.activities.find(a=>a.id===actId)
+  if (!act) return
+  const updates = {
+    name: document.getElementById('ea-name').value.trim(),
+    description: document.getElementById('ea-desc').value,
+    category: document.getElementById('ea-cat').value,
+    responsible: document.getElementById('ea-resp').value,
+    due_date: document.getElementById('ea-due').value || null,
+    notes: document.getElementById('ea-notes').value,
+  }
+  if (!updates.name) { showToast('El nombre es obligatorio','err'); return }
+  Object.assign(act, updates)
+  if (supabase) {
+    await supabase.from('onboarding_activities').update(updates).eq('id', actId)
+  }
+  closeModal('edit-ob-act-modal')
+  renderOnboarding()
+  showToast('Actividad actualizada','ok')
+}
+
+async function deleteActivity(actId, obId) {
+  if (!confirm('¿Eliminar esta actividad?')) return
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (ob) ob.activities = ob.activities.filter(a=>a.id!==actId)
+  if (supabase) {
+    await supabase.from('onboarding_activities').delete().eq('id', actId)
+  }
+  renderOnboarding(); updateCounters()
+}
+
+// Agregar actividad inline (nueva fila en la tabla)
+function addActivityInline(obId) {
+  const tbody = document.getElementById('ob-acts-'+obId)
+  if (!tbody) { openAddActivityModal(obId); return }
+  const tempId = 'new-'+Date.now()
+  const newRow = document.createElement('tr')
+  newRow.id = 'obact-'+tempId
+  newRow.innerHTML = `
+    <td><span class="ob-act-drag">⠿</span></td>
+    <td><div class="ob-chk"></div></td>
+    <td>
+      <input class="ob-inline-edit" id="new-act-name-${tempId}" placeholder="Nombre de la actividad..." autofocus>
+    </td>
+    <td>
+      <select class="fi" style="font-size:11px;padding:3px 6px;height:26px" id="new-act-cat-${tempId}">
+        <option>General</option><option>Accesos</option><option>Documentación</option><option>Capacitación</option><option>Social</option><option>Técnico</option><option>Compliance</option>
+      </select>
+    </td>
+    <td><input class="ob-inline-edit" id="new-act-resp-${tempId}" placeholder="Responsable" style="width:80px"></td>
+    <td><input class="ob-inline-edit" id="new-act-due-${tempId}" type="date" style="width:100px;font-size:11px"></td>
+    <td>
+      <div style="display:flex;gap:3px">
+        <button class="btn btn-primary btn-xs" onclick="confirmAddActivity('${obId}','${tempId}')">✓</button>
+        <button class="btn btn-ghost btn-xs" onclick="document.getElementById('obact-${tempId}').remove()">✕</button>
+      </div>
+    </td>`
+  tbody.appendChild(newRow)
+  document.getElementById('new-act-name-'+tempId)?.focus()
+}
+
+async function confirmAddActivity(obId, tempId) {
+  const name = document.getElementById('new-act-name-'+tempId)?.value.trim()
+  if (!name) { showToast('El nombre es obligatorio','err'); return }
+  const cat = document.getElementById('new-act-cat-'+tempId)?.value || 'General'
+  const resp = document.getElementById('new-act-resp-'+tempId)?.value || ''
+  const due = document.getElementById('new-act-due-'+tempId)?.value || null
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  const newAct = {
+    onboarding_id: obId, name, category: cat, responsible: resp,
+    due_date: due, done: false, order_index: ob.activities.length
+  }
+  if (supabase) {
+    const { data, error } = await supabase.from('onboarding_activities').insert([newAct]).select().single()
+    if (error) { showToast('Error: '+error.message, 'err'); return }
+    ob.activities.push(data)
+  } else {
+    const local = { ...newAct, id: 'local-'+Date.now() }
+    ob.activities.push(local)
+  }
+  renderOnboarding()
+  showToast('Actividad añadida','ok')
+}
+
+function openAddActivityModal(obId) {
+  document.getElementById('ea-name').value = ''
+  document.getElementById('ea-desc').value = ''
+  document.getElementById('ea-cat').value = 'General'
+  document.getElementById('ea-resp').value = ''
+  document.getElementById('ea-due').value = ''
+  document.getElementById('ea-notes').value = ''
+  document.getElementById('edit-act-title').textContent = 'Nueva actividad'
+  document.getElementById('ea-save-btn').onclick = () => saveNewActivity(obId)
+  document.getElementById('ea-delete-btn').style.display = 'none'
+  openModal('edit-ob-act-modal')
+}
+
+async function saveNewActivity(obId) {
+  const name = document.getElementById('ea-name').value.trim()
+  if (!name) { showToast('El nombre es obligatorio','err'); return }
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  const newAct = {
+    onboarding_id: obId, name,
+    description: document.getElementById('ea-desc').value,
+    category: document.getElementById('ea-cat').value,
+    responsible: document.getElementById('ea-resp').value,
+    due_date: document.getElementById('ea-due').value || null,
+    notes: document.getElementById('ea-notes').value,
+    done: false, order_index: ob.activities.length
+  }
+  if (supabase) {
+    const { data, error } = await supabase.from('onboarding_activities').insert([newAct]).select().single()
+    if (error) { showToast('Error: '+error.message,'err'); return }
+    ob.activities.push(data)
+  } else {
+    ob.activities.push({ ...newAct, id: 'local-'+Date.now() })
+  }
+  closeModal('edit-ob-act-modal')
+  document.getElementById('ea-delete-btn').style.display = ''
+  renderOnboarding()
+  showToast('Actividad añadida','ok')
+}
+
+async function markOBComplete(obId) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  ob.status = 'Completado'; ob.progress = 100
+  ob.activities.forEach(a => a.done = true)
+  if (supabase) {
+    await supabase.from('onboardings').update({status:'Completado', progress:100}).eq('id', obId)
+    if (ob.activities.length) {
+      await supabase.from('onboarding_activities').update({done:true, done_date: new Date().toISOString().split('T')[0]}).eq('onboarding_id', obId)
+    }
+  }
+  renderOnboarding(); updateCounters()
+  showToast('Onboarding completado ✓','ok')
+}
+
+function editOnboarding(obId) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  // Populate modal with existing data and switch to edit mode
+  document.getElementById('ob-emp').value = ob.employee_id || ''
+  document.getElementById('ob-start').value = ob.start_date || ob.start || ''
+  document.getElementById('ob-mentor').value = ob.mentor || ''
+  document.getElementById('ob-site').value = ob.site || ''
+  document.getElementById('ob-notes').value = ob.notes || ''
+  const saveBtn = document.getElementById('ob-save-btn')
+  saveBtn.textContent = 'Guardar cambios'
+  saveBtn.onclick = () => updateOnboarding(obId)
+  openModal('new-ob-modal')
+}
+
+async function updateOnboarding(obId) {
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  const updates = {
+    mentor: document.getElementById('ob-mentor').value,
+    site: document.getElementById('ob-site').value,
+    start_date: document.getElementById('ob-start').value,
+    notes: document.getElementById('ob-notes').value,
+  }
+  Object.assign(ob, updates)
+  if (supabase) {
+    await supabase.from('onboardings').update(updates).eq('id', obId)
+  }
+  closeModal('new-ob-modal')
+  document.getElementById('ob-save-btn').textContent = 'Crear onboarding'
+  document.getElementById('ob-save-btn').onclick = saveOnboarding
+  renderOnboarding()
+  showToast('Onboarding actualizado','ok')
+}
+
+async function deleteOB(id) {
+  if(!confirm('¿Eliminar onboarding y todas sus actividades?')) return
+  S.onboardings = S.onboardings.filter(o=>o.id!==id)
+  if (supabase) await supabase.from('onboardings').delete().eq('id', id)
+  renderOnboarding(); updateCounters()
+  showToast('Onboarding eliminado','ok')
+}
+
+async function saveOnboarding() {
+  const eid = document.getElementById('ob-emp').value
+  if(!eid) { showToast('Selecciona empleado','err'); return }
+  const btn = document.getElementById('ob-save-btn')
+  btn.disabled = true; btn.textContent = 'Creando...'
+  const templateId = document.getElementById('ob-template').value
+  const ob = {
+    employee_id: eid,
+    start_date: document.getElementById('ob-start').value,
+    duration: document.getElementById('ob-dur').value,
+    mentor: document.getElementById('ob-mentor').value,
+    site: document.getElementById('ob-site').value,
+    notes: document.getElementById('ob-notes').value,
+    status: 'En proceso', progress: 0
+  }
+  await createOnboardingForEmployee(eid, ob.start_date, ob.site, templateId)
+  // Override with form data
+  const newOb = S.onboardings[S.onboardings.length-1]
+  Object.assign(newOb, ob)
+  closeModal('new-ob-modal')
+  renderOnboarding(); updateCounters()
+  showToast('Onboarding creado','ok')
+  btn.disabled = false; btn.textContent = 'Crear onboarding'
+}
+
+// Templates
+function renderTemplatesList() {
+  const list = document.getElementById('templates-list')
+  if (!S.templates.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Sin templates. Crea uno abajo.</div>'
+    return
+  }
+  list.innerHTML = S.templates.map(t => `<div class="template-card">
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:600">${escH(t.name)} ${t.is_default?'<span class="badge b-green" style="font-size:9px">Default</span>':''}</div>
+      <div style="font-size:11px;color:var(--text3)">${t.area||'Todos los sectores'} · ${(t.onboarding_template_activities||[]).length} actividades</div>
+    </div>
+    <button class="btn btn-danger btn-xs" onclick="deleteTemplate('${t.id}')">✕</button>
+  </div>`).join('')
+}
+
+async function saveTemplate() {
+  const name = document.getElementById('tmpl-name').value.trim()
+  if (!name) { showToast('Nombre obligatorio','err'); return }
+  const actsText = document.getElementById('tmpl-acts').value
+  const acts = actsText.split('\n').map(s=>s.trim()).filter(Boolean).map((a,i)=>({name:a, category:'General', day_offset:0, order_index:i}))
+  const tmpl = { name, area: document.getElementById('tmpl-area').value, is_default: false }
+  if (supabase) {
+    const { data } = await supabase.from('onboarding_templates').insert([tmpl]).select().single()
+    if (acts.length) {
+      await supabase.from('onboarding_template_activities').insert(acts.map(a=>({...a, template_id: data.id})))
+    }
+    S.templates.push({ ...data, onboarding_template_activities: acts })
+  } else {
+    S.templates.push({ ...tmpl, id: 'tmpl-'+Date.now(), onboarding_template_activities: acts })
+  }
+  document.getElementById('tmpl-name').value = ''; document.getElementById('tmpl-acts').value = ''
+  renderTemplatesList(); populateTemplateSelects()
+  showToast('Template creado','ok')
+}
+
+async function deleteTemplate(id) {
+  if (!confirm('¿Eliminar template?')) return
+  S.templates = S.templates.filter(t=>t.id!==id)
+  if (supabase) await supabase.from('onboarding_templates').delete().eq('id', id)
+  renderTemplatesList(); populateTemplateSelects()
+}
+
+function applyTemplateToOB(obId) {
+  if (!S.templates.length) { showToast('No hay templates. Crea uno primero.','info'); openModal('ob-templates-modal'); return }
+  const sel = prompt('Selecciona template:\n'+S.templates.map((t,i)=>`${i+1}. ${t.name}`).join('\n'))
+  const idx = parseInt(sel)-1
+  if (isNaN(idx)||!S.templates[idx]) return
+  const tmpl = S.templates[idx]
+  const ob = S.onboardings.find(x=>x.id===obId)
+  if (!ob) return
+  const acts = (tmpl.onboarding_template_activities||[]).map((a,i) => ({
+    onboarding_id: obId, name: a.name, category: a.category||'General',
+    responsible: a.responsible||'', done: false, order_index: ob.activities.length+i
+  }))
+  if (supabase) {
+    supabase.from('onboarding_activities').insert(acts).select().then(({data})=>{
+      ob.activities.push(...(data||[]))
+      renderOnboarding()
+    })
+  } else {
+    ob.activities.push(...acts.map(a=>({...a, id:'local-'+Date.now()+Math.random()})))
+    renderOnboarding()
+  }
+  showToast(`Template "${tmpl.name}" aplicado`,'ok')
+}
+
+// ═══════════════════════════════════════════════════
+// SURVEYS
+// ═══════════════════════════════════════════════════
+function filterSurveys() {
+  const eid = document.getElementById('sv-fe')?.value || ''
+  const svs = (eid ? S.surveys.filter(s=>s.employee_id===eid||s.eid==eid) : S.surveys)
+  const list = document.getElementById('surveys-list')
+  if (!list) return
+  list.innerHTML = svs.length ? svs.map(sv => renderSvCard(sv)).join('') : '<div class="empty"><div class="empty-ico">💬</div><div class="empty-t">Sin encuestas</div></div>'
+}
+
+function renderSvCard(sv) {
+  const e = sv.employees || S.employees.find(x=>x.id===sv.employee_id||x.id===sv.eid) || {}
+  return `<div class="sv-card">
+    <div class="sv-head" onclick="toggleSv('svb-${sv.id}')">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+      ${e.name?`<div class="emp-av" style="background:${e.color||'#1D6AE5'};width:22px;height:22px;font-size:8px">${ini(e)}</div>`:''}
+      <div style="flex:1;font-size:12px;font-weight:500">${sv.type||'Encuesta'} — ${e.name||'?'} ${e.lastname||''}</div>
+      <span class="badge b-gray">${sv.date||''}</span>
+      <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();deleteSv('${sv.id}')">✕</button>
+    </div>
+    <div class="sv-body" id="svb-${sv.id}" style="display:none">
+      ${[['¿Qué disfrutas más?',sv.q1],['Objetivos de carrera',sv.q2],['Habilidades a desarrollar',sv.q3],['Obstáculos',sv.q4],['Motivación (1-10)',sv.q5?`${sv.q5}/10`:null],['Visión 3-5 años',sv.q6],['Notas supervisor',sv.notes]].filter(([,v])=>v).map(([q,a])=>`<div class="sv-q"><div class="sv-qlbl">${q}</div><div class="sv-ans">${escH(a)}</div></div>`).join('')}
+    </div>
+  </div>`
+}
+
+function toggleSv(id) { const el=document.getElementById(id); if(el) el.style.display=el.style.display==='none'?'block':'none' }
+
+async function saveSurvey() {
+  const eid = document.getElementById('sv-emp').value
+  if (!eid) { showToast('Selecciona empleado','err'); return }
+  const sv = {
+    employee_id: eid,
+    supervisor: document.getElementById('sv-sup').value,
+    date: document.getElementById('sv-date').value || today(),
+    type: document.getElementById('sv-type').value,
+    q1: document.getElementById('sv-q1').value,
+    q2: document.getElementById('sv-q2').value,
+    q3: document.getElementById('sv-q3').value,
+    q4: document.getElementById('sv-q4').value,
+    q5: parseInt(document.getElementById('sv-q5').value)||null,
+    q6: document.getElementById('sv-q6').value,
+    notes: document.getElementById('sv-notes').value,
+  }
+  if (supabase) {
+    const { data, error } = await supabase.from('surveys').insert([sv]).select().single()
+    if (error) { showToast('Error: '+error.message,'err'); return }
+    S.surveys.unshift(data)
+  } else {
+    S.surveys.unshift({ ...sv, id: 'sv-'+Date.now() })
+  }
+  const e = S.employees.find(x=>x.id===eid)
+  closeModal('new-survey-modal')
+  showToast(`Encuesta guardada — ${e?.name||'empleado'}`,'ok')
+  updateCounters(); filterSurveys()
+}
+
+async function deleteSv(id) {
+  if(!confirm('¿Eliminar encuesta?')) return
+  S.surveys = S.surveys.filter(s=>s.id!==id)
+  if (supabase) await supabase.from('surveys').delete().eq('id', id)
+  filterSurveys(); updateCounters()
+}
+
+function openSurveyForCurrent() {
+  openModal('new-survey-modal')
+  const sel = document.getElementById('sv-emp')
+  sel.innerHTML = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname}</option>`).join('')
+  if (S.currentEmpId) sel.value = S.currentEmpId
+}
+
+// ═══════════════════════════════════════════════════
+// ROADMAPS
+// ═══════════════════════════════════════════════════
+function renderRoadmaps() {
+  const stack = document.getElementById('rm-stack')
+  if (!stack) return
+  if (!S.roadmaps.length) {
+    stack.innerHTML = '<div class="empty"><div class="empty-ico">🗺</div><div class="empty-t">Sin roadmaps</div><div style="font-size:12px">Crea tu primer roadmap de carrera</div></div>'
+    return
+  }
+  stack.innerHTML = S.roadmaps.map(r => `<div class="rm-card">
+    <div class="rm-card-head">
+      <div><div style="font-size:13px;font-weight:600">${escH(r.name)}</div><div style="font-size:11px;color:var(--text3)">${r.area||'General'}</div></div>
+      <button class="btn btn-danger btn-xs" onclick="deleteRM('${r.id}')">✕</button>
+    </div>
+    <div class="rm-card-body">${r.description?`<div style="font-size:12px;color:var(--text2)">${escH(r.description)}</div>`:'<div style="font-size:12px;color:var(--text3)">Sin descripción</div>'}</div>
+  </div>`).join('')
+}
+
+async function saveRM() {
+  const name = document.getElementById('rm-name').value.trim()
+  if (!name) { showToast('Nombre obligatorio','err'); return }
+  const rm = { name, area: document.getElementById('rm-area').value, description: document.getElementById('rm-desc').value, phases: [] }
+  if (supabase) {
+    const { data } = await supabase.from('roadmaps').insert([rm]).select().single()
+    S.roadmaps.push(data)
+  } else {
+    S.roadmaps.push({ ...rm, id: 'rm-'+Date.now() })
+  }
+  closeModal('new-rm-modal')
+  renderRoadmaps()
+  showToast('Roadmap creado','ok')
+}
+
+async function deleteRM(id) {
+  if (!confirm('¿Eliminar roadmap?')) return
+  S.roadmaps = S.roadmaps.filter(r=>r.id!==id)
+  if (supabase) await supabase.from('roadmaps').delete().eq('id', id)
+  renderRoadmaps()
+}
+
+// ═══════════════════════════════════════════════════
+// PLANS
+// ═══════════════════════════════════════════════════
+function renderPlans() {
+  const cols = ['En curso','Completado','Pausado']
+  const kanban = document.getElementById('kanban')
+  if (!kanban) return
+  kanban.innerHTML = cols.map(col => {
+    const cards = S.plans.filter(p=>p.status===col)
+    return `<div class="k-col">
+      <div class="k-col-head"><span class="k-col-title">${col}</span><span class="k-cnt">${cards.length}</span></div>
+      ${cards.map(p => {
+        const e = p.employees || S.employees.find(x=>x.id===p.employee_id)
+        const r = p.roadmaps || S.roadmaps.find(x=>x.id===p.roadmap_id)
+        return `<div class="k-card">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">${r?.name||'Roadmap'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${e?.name||'?'} ${e?.lastname||''}</div>
+          <div class="pbar"><div class="pfill p-blue" style="width:${p.progress||0}%"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">${p.progress||0}%</div>
+        </div>`
+      }).join('')}
+    </div>`
+  }).join('')
+}
+
+async function savePlan() {
+  const eid = document.getElementById('ap-emp').value
+  const rid = document.getElementById('ap-rm').value
+  if (!eid||!rid) { showToast('Selecciona empleado y roadmap','err'); return }
+  const plan = { employee_id: eid, roadmap_id: rid, status: 'En curso', priority: document.getElementById('ap-pri').value, progress: 0, start_date: document.getElementById('ap-start').value, end_date: document.getElementById('ap-end').value }
+  if (supabase) {
+    const { data } = await supabase.from('plans').insert([plan]).select('*, employees(name,lastname), roadmaps(name)').single()
+    S.plans.push(data)
+  } else {
+    S.plans.push({ ...plan, id: 'p-'+Date.now(), employees: S.employees.find(e=>e.id===eid), roadmaps: S.roadmaps.find(r=>r.id===rid) })
+  }
+  closeModal('assign-modal'); renderPlans()
+  showToast('Plan asignado','ok')
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+function renderDashboard() {
+  const total = S.employees.length
+  const inOB = S.onboardings.filter(o=>o.status==='En proceso').length
+  const survTotal = S.surveys.length
+  const areas = [...new Set(S.employees.map(e=>e.area))].length
+
+  document.getElementById('d-stats').innerHTML = [
+    ['Empleados', total, 'Total activos', 'var(--accent)'],
+    ['En onboarding', inOB, 'En proceso', 'var(--teal)'],
+    ['Encuestas 1:1', survTotal, 'Registradas', 'var(--purple)'],
+    ['Áreas', areas, 'Distintas', 'var(--amber)'],
+  ].map(([l,v,m,c])=>`<div class="stat-box"><div class="stat-lbl">${l}</div><div class="stat-val" style="color:${c}">${v}</div><div class="stat-meta">${m}</div></div>`).join('')
+
+  // Area distribution
+  const areaCounts = {}
+  S.employees.forEach(e => { if(e.area) areaCounts[e.area]=(areaCounts[e.area]||0)+1 })
+  const sortedAreas = Object.entries(areaCounts).sort((a,b)=>b[1]-a[1]).slice(0,8)
+  const maxA = sortedAreas[0]?.[1] || 1
+  document.getElementById('d-areas').innerHTML = sortedAreas.map(([a,c])=>`<div class="bar-row"><span class="bar-lbl">${a}</span><div class="bar-track"><div class="bar-fill" style="width:${c/maxA*100}%;background:var(--accent)">${c}</div></div><span class="bar-val">${c}</span></div>`).join('')
+
+  // Onboarding summary
+  document.getElementById('d-onboarding').innerHTML = S.onboardings.slice(0,4).map(ob => {
+    const e = ob.employees || S.employees.find(x=>x.id===ob.employee_id) || {}
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+      <div class="emp-av" style="background:${e.color||'#1D6AE5'};width:26px;height:26px;font-size:9px">${ini(e)}</div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:500">${e.name||'?'} ${e.lastname||''}</div><div style="font-size:11px;color:var(--text3)">${ob.progress||0}% completado</div></div>
+      <span class="badge ${ob.status==='Completado'?'b-green':ob.status==='En proceso'?'b-blue':'b-gray'}">${ob.status||''}</span>
+    </div>`
+  }).join('') || '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Sin onboardings activos</div>'
+
+  // OB summary stats
+  const obByStatus = {EnProceso: S.onboardings.filter(o=>o.status==='En proceso').length, Completado: S.onboardings.filter(o=>o.status==='Completado').length, Pendiente: S.onboardings.filter(o=>o.status==='Pendiente inicio').length}
+  document.getElementById('d-ob-summary').innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:12px">
+      ${[['En proceso',obByStatus.EnProceso,'var(--accent)'],['Completado',obByStatus.Completado,'var(--green)'],['Pendiente',obByStatus.Pendiente,'var(--amber)']].map(([l,v,c])=>`<div style="flex:1;text-align:center;padding:10px;background:var(--bg3);border-radius:var(--radius)"><div style="font-size:18px;font-weight:700;color:${c}">${v}</div><div style="font-size:11px;color:var(--text3)">${l}</div></div>`).join('')}
+    </div>
+    <div style="font-size:12px;font-weight:600;margin-bottom:6px">Progreso por onboarding</div>
+    ${S.onboardings.slice(0,5).map(ob=>{const e=ob.employees||S.employees.find(x=>x.id===ob.employee_id)||{};return`<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>${e.name||'?'} ${e.lastname||''}</span><span>${ob.progress||0}%</span></div><div class="pbar"><div class="pfill ${(ob.progress||0)===100?'p-green':'p-blue'}" style="width:${ob.progress||0}%"></div></div></div>`}).join('')}
+  `
+}
+
+// ═══════════════════════════════════════════════════
+// IA ANALYSIS
+// ═══════════════════════════════════════════════════
+async function runAI() {
+  const id = S.currentEmpId
+  const e = S.employees.find(x=>x.id===id)
+  if (!e) return
+  const btn = document.getElementById('ai-btn')
+  btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Analizando...'
+
+  const svs = S.surveys.filter(s=>s.employee_id===id||s.eid===id)
+  const prompt = `Eres un experto en RRHH y desarrollo de talento. Analiza este perfil y genera un plan de carrera personalizado.
+EMPLEADO: ${e.name} ${e.lastname}, ${e.level} en ${e.area}, Rol: ${e.role||'N/A'}
+HABILIDADES: ${(e.skills||[]).join(', ')||'No especificadas'}
+ENCUESTAS 1:1: ${svs.length?svs.map(s=>`Fecha ${s.date}: Objetivos="${s.q2||''}" Motivación=${s.q5||'N/A'}/10`).join(' | '):'Sin encuestas'}
+Responde SOLO JSON sin markdown: {"resumen":"string","fortalezas":["s","s"],"areasDesarrollo":["s","s"],"planCarrera":[{"fase":"s","periodo":"s","objetivos":["s"],"hito":"s"}],"riesgoRetencion":"Alto|Medio|Bajo","siguientePaso":"s"}`
+
+  try {
+    // Usar Netlify function para no exponer API key
+    const res = await fetch('/.netlify/functions/ai-analyze', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ prompt, employee: e })
+    })
+    const data = await res.json()
+    if (data.analysis) {
+      e.aiAnalysis = { ...data.analysis, date: new Date().toLocaleDateString('es-ES') }
+      showToast('Análisis IA completado ✓','ok')
+    }
+  } catch(err) {
+    // Fallback
+    e.aiAnalysis = {
+      resumen: `${e.name} es un profesional de nivel ${e.level} en ${e.area} con potencial de crecimiento.`,
+      fortalezas: ['Expertise en '+e.area, 'Orientación a resultados', 'Adaptabilidad'],
+      areasDesarrollo: ['Liderazgo', 'Comunicación ejecutiva', 'Visibilidad estratégica'],
+      planCarrera: [{fase:'Consolidación',periodo:'0-6 meses',objetivos:['Fortalecer habilidades clave'],hito:'Certificación técnica'}],
+      riesgoRetencion: 'Medio', siguientePaso: 'Programar reunión con gerencia.',
+      date: new Date().toLocaleDateString('es-ES')
+    }
+  }
+  btn.disabled = false; btn.innerHTML = '✦ Re-analizar'
+  renderProfile(id)
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'))
+  const pg = document.getElementById('page-'+p)
+  if (pg) pg.classList.add('active')
+  const ni = document.querySelector(`.nav-item[data-page="${p}"]`)
+  if (ni) ni.classList.add('active')
+  const titles = {dashboard:'Dashboard',employees:'Empleados',profile:'Perfil',onboarding:'Onboarding',surveys:'Encuestas 1:1',roadmaps:'Roadmaps',plans:'Planes asignados',metrics:'Métricas'}
+  document.getElementById('topbar-title').textContent = titles[p] || p
+  if (p==='onboarding') { renderOnboarding(); renderTemplatesList() }
+  if (p==='surveys') filterSurveys()
+  if (p==='roadmaps') renderRoadmaps()
+  if (p==='plans') { populateAssignSelects(); renderPlans() }
+  if (p==='dashboard') renderDashboard()
+}
+
+document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+  el.addEventListener('click', () => showPage(el.dataset.page))
+})
+
+// ═══════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id)?.classList.add('open')
+  if (id==='new-emp-modal') {
+    document.getElementById('ne-date').value = today()
+    populateTemplateSelects()
+  }
+  if (id==='new-ob-modal') {
+    document.getElementById('ob-start').value = today()
+    const empSel = document.getElementById('ob-emp')
+    if (empSel) empSel.innerHTML = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname}</option>`).join('')
+    if (S.currentEmpId) empSel.value = S.currentEmpId
+    document.getElementById('ob-save-btn').textContent = 'Crear onboarding'
+    document.getElementById('ob-save-btn').onclick = saveOnboarding
+  }
+  if (id==='new-survey-modal') {
+    const sel = document.getElementById('sv-emp')
+    sel.innerHTML = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname}</option>`).join('')
+    if (S.currentEmpId) sel.value = S.currentEmpId
+    document.getElementById('sv-date').value = today()
+  }
+  if (id==='assign-modal') populateAssignSelects()
+  if (id==='ob-templates-modal') renderTemplatesList()
+}
+
+function closeModal(id) { document.getElementById(id)?.classList.remove('open') }
+
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open') }))
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function escH(s) {
+  if (!s) return ''
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function today() { return new Date().toISOString().split('T')[0] }
+
+function globalSearch(q) {
+  if(!q||q.length<2) return
+  const f = S.employees.find(e=>(e.name+' '+e.lastname+' '+(e.role||'')).toLowerCase().includes(q.toLowerCase()))
+  if (f) openProfile(f.id)
+}
+
+let toastT
+function showToast(msg, type='info') {
+  const t=document.getElementById('toast'), m=document.getElementById('toast-msg')
+  t.className=`toast t-${type} show`; m.textContent=msg
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3200)
+}
+
+function updateCounters() {
+  document.getElementById('nb-emp').textContent = S.employees.length
+  document.getElementById('nb-sv').textContent = S.surveys.length
+  document.getElementById('nb-ob').textContent = S.onboardings.filter(o=>o.status==='En proceso').length
+}
+
+function populateFilters() {
+  const areas = [...new Set(S.employees.map(e=>e.area).filter(Boolean))].sort()
+  const sites = [...new Set(S.employees.map(e=>e.site).filter(Boolean))].sort()
+  const efArea = document.getElementById('ef-area')
+  if (efArea) efArea.innerHTML = '<option value="">Todas las áreas</option>' + areas.map(a=>`<option>${a}</option>`).join('')
+  const efSite = document.getElementById('ef-site')
+  if (efSite) efSite.innerHTML = '<option value="">Todas las plantas</option>' + sites.map(s=>`<option>${s}</option>`).join('')
+  const svFe = document.getElementById('sv-fe')
+  if (svFe) svFe.innerHTML = '<option value="">Todos los empleados</option>' + S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname}</option>`).join('')
+}
+
+function populateTemplateSelects() {
+  const opts = '<option value="">Sin template (por defecto)</option>' + S.templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')
+  const neT = document.getElementById('ne-template')
+  const obT = document.getElementById('ob-template')
+  if (neT) neT.innerHTML = opts
+  if (obT) obT.innerHTML = opts
+  // Show/hide template row in new employee modal
+  const neNew = document.getElementById('ne-new')
+  const tmplRow = document.getElementById('ne-template-row')
+  if (neNew && tmplRow) {
+    neNew.onchange = () => { tmplRow.style.display = neNew.value==='1' ? '' : 'none' }
+  }
+}
+
+function populateAssignSelects() {
+  const ae = document.getElementById('ap-emp'), ar = document.getElementById('ap-rm')
+  if (ae) ae.innerHTML = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname} — ${e.area}</option>`).join('')
+  if (ar) ar.innerHTML = S.roadmaps.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')
+  const apStart = document.getElementById('ap-start'), apEnd = document.getElementById('ap-end')
+  if (apStart) apStart.value = today()
+  if (apEnd) { const d=new Date(); d.setFullYear(d.getFullYear()+1); apEnd.value=d.toISOString().split('T')[0] }
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+checkAuth()
+</script>
+</body>
+</html>
