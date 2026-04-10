@@ -532,8 +532,8 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 // ═══════════════════════════════════════════════════
 // SUPABASE INIT
 // ═══════════════════════════════════════════════════
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
-const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+const SUPABASE_URL = '%VITE_SUPABASE_URL%'
+const SUPABASE_ANON = '%VITE_SUPABASE_ANON_KEY%'
 
 let supabase = null
 try {
