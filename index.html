@@ -255,6 +255,38 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   .page{display:block!important}
   body{background:#fff!important}
 }
+/* ─── CURSOS ─────────────────────────────────── */
+.course-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 15px;transition:all .12s;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.course-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stabs{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:3px;width:fit-content;margin-bottom:16px}
+.stab{padding:5px 16px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);transition:all .12s}
+.stab.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.cc-tag{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+.cc-Tecnología{background:var(--accent-bg);color:var(--accent)}
+.cc-Liderazgo{background:#F5F0FF;color:var(--purple)}
+.cc-Soft{background:#ECFDF4;color:var(--green)}
+.cc-Datos{background:#FFF7E6;color:var(--amber)}
+.cc-Proceso{background:#FEF2F2;color:var(--red)}
+.cc-Producto{background:#F0FDF9;color:var(--teal)}
+.cc-General{background:var(--bg4);color:var(--text3)}
+.st-Pendiente{background:var(--bg4);color:var(--text3);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.st-En{background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.st-Completado{background:#ECFDF4;color:var(--green);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.st-Cancelado{background:#FEF2F2;color:var(--red);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+/* ─── ENTREVISTAS ────────────────────────────── */
+.score-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.score-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);background:var(--bg3);font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;line-height:1}
+.score-btn:hover{border-color:var(--accent);color:var(--accent)}
+.score-btn.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.iv-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.iv-head{display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg3);align-items:center;justify-content:space-between}
+.iv-body{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.iv-q{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.iv-a{font-size:12.5px;color:var(--text2)}
+.iv-full{grid-column:1/-1}
+/* ─── GMAIL ──────────────────────────────────── */
+.btn-gmail{background:#fff;color:#1a73e8;border:1px solid #dadce0;display:inline-flex;align-items:center;gap:6px}
+.btn-gmail:hover{background:#f8f9fa;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 </style>
 </head>
 <body>
@@ -299,6 +331,8 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <div class="nav-group"><div class="nav-label">Desarrollo</div>
     <div class="nav-item" data-page="roadmaps"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Roadmaps</div>
     <div class="nav-item" data-page="plans"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Planes asignados</div>
+    <div class="nav-item" data-page="cursos"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6h6M4 8.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7 2V1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Cursos <span class="nav-badge" id="nb-cursos">0</span></div>
+    <div class="nav-item" data-page="entrevistas"><svg viewBox="0 0 14 14" fill="none"><path d="M2 3h10v7a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v2M9 1v2M2 6h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Entrevistas <span class="nav-badge" id="nb-iv">0</span></div>
   </div>
   <div class="nav-group"><div class="nav-label">Análisis</div>
     <div class="nav-item" data-page="metrics"><svg viewBox="0 0 14 14" fill="none"><path d="M1.5 10.5L4.5 7l2.5 2 3-4.5 2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Métricas</div>
@@ -405,6 +439,39 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <section class="page" id="page-metrics">
   <div class="ph"><div><div class="ptitle">Métricas</div></div></div>
   <div id="metrics-content"></div>
+</section>
+
+<!-- CURSOS -->
+<section class="page" id="page-cursos">
+  <div class="ph">
+    <div><div class="ptitle">Cursos</div><div class="psub">Catálogo y asignaciones por empleado según roadmap</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="openModal('new-course-modal')">+ Nuevo curso</button>
+      <button class="btn btn-primary" onclick="openModal('assign-course-modal')">+ Asignar curso</button>
+    </div>
+  </div>
+  <div class="stabs" id="course-stabs">
+    <div class="stab active" onclick="switchCourseTab('catalogo',this)">Catálogo</div>
+    <div class="stab" onclick="switchCourseTab('asignaciones',this)">Asignaciones</div>
+  </div>
+  <div id="cursos-catalogo"></div>
+  <div id="cursos-asignaciones" style="display:none"></div>
+</section>
+
+<!-- ENTREVISTAS -->
+<section class="page" id="page-entrevistas">
+  <div class="ph">
+    <div><div class="ptitle">Entrevistas de Desarrollo</div><div class="psub">Formularios 1:1 y desarrollo profesional</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gmail" onclick="sendInterviewEmail()"><svg width="14" height="14" viewBox="0 0 18 18"><path d="M16.5 3h-15A1.5 1.5 0 000 4.5v9A1.5 1.5 0 001.5 15h15A1.5 1.5 0 0018 13.5v-9A1.5 1.5 0 0016.5 3zM9 10.125L1.875 4.5h14.25L9 10.125zm-7.5 3.375V6l7.5 5.625L16.5 6v7.5H1.5z" fill="#1a73e8"/></svg>Enviar por Gmail</button>
+      <button class="btn btn-primary" onclick="openModal('new-interview-modal')">+ Nueva entrevista</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <select class="fi fi-sm" id="iv-filter-emp" onchange="renderInterviews()" style="width:200px"><option value="">Todos los empleados</option></select>
+    <select class="fi fi-sm" id="iv-filter-type" onchange="renderInterviews()" style="width:200px"><option value="">Todos los tipos</option><option>Desarrollo Profesional</option><option>1:1 Seguimiento</option><option>Evaluación 360</option><option>Plan de Carrera</option><option>Feedback Anual</option></select>
+  </div>
+  <div id="interviews-list"></div>
 </section>
 
   </main>
@@ -526,6 +593,62 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('cfg-modal')">Cerrar</button><button class="btn btn-primary" onclick="closeModal('cfg-modal');showToast('Guardado','ok')">Guardar</button></div>
 </div></div>
 
+<!-- NEW COURSE -->
+<div class="overlay" id="new-course-modal"><div class="modal modal-wide">
+  <div class="mhead"><div class="mtitle" id="nc-title">Nuevo curso</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-course-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow"><div class="fg"><label class="flbl">Nombre del curso *</label><input class="fi" id="nc-name" placeholder="Python para Análisis de Datos"></div><div class="fg"><label class="flbl">Proveedor / Plataforma</label><input class="fi" id="nc-provider" placeholder="Coursera, Udemy, interno..."></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Categoría</label><select class="fi" id="nc-cat"><option>Tecnología</option><option>Liderazgo</option><option>Soft</option><option>Datos</option><option>Proceso</option><option>Producto</option><option>General</option></select></div><div class="fg"><label class="flbl">Duración estimada</label><input class="fi" id="nc-dur" placeholder="20 horas, 4 semanas..."></div></div>
+    <div class="fg"><label class="flbl">URL del curso</label><input class="fi" id="nc-url" type="url" placeholder="https://"></div>
+    <div class="fg"><label class="flbl">Descripción breve</label><textarea class="fi" id="nc-desc" style="min-height:60px" placeholder="Objetivos y contenido del curso..."></textarea></div>
+    <div class="fg"><label class="flbl">Tags (coma separados)</label><input class="fi" id="nc-tags" placeholder="python, ml, análisis..."></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-course-modal')">Cancelar</button><button class="btn btn-primary" id="nc-save-btn" onclick="saveCourse()">Guardar curso</button></div>
+</div></div>
+
+<!-- ASSIGN COURSE -->
+<div class="overlay" id="assign-course-modal"><div class="modal modal-wide">
+  <div class="mhead"><div class="mtitle">Asignar curso a empleado</div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('assign-course-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow"><div class="fg"><label class="flbl">Empleado *</label><select class="fi" id="ac-emp" onchange="suggestCoursesByRoadmap()"></select></div><div class="fg"><label class="flbl">Curso *</label><select class="fi" id="ac-course"></select></div></div>
+    <div id="ac-roadmap-row" class="fg"><label class="flbl">Roadmap asociado (opcional)</label><select class="fi" id="ac-roadmap"><option value="">— ninguno —</option></select></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fecha límite</label><input class="fi" id="ac-due" type="date"></div><div class="fg"><label class="flbl">Estado inicial</label><select class="fi" id="ac-status"><option>Pendiente</option><option>En curso</option></select></div></div>
+    <div class="fg"><label class="flbl">Notas</label><textarea class="fi" id="ac-notes" style="min-height:50px" placeholder="Motivo de la asignación..."></textarea></div>
+    <div id="ac-suggestion" style="display:none;background:var(--accent-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:10px;font-size:12px;color:var(--accent)"></div>
+    <div class="fg" style="margin-top:10px"><label class="flbl" style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ac-notify" checked> Notificar al empleado por Gmail</label></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('assign-course-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveAssignment()">Asignar curso</button></div>
+</div></div>
+
+<!-- NEW INTERVIEW -->
+<div class="overlay" id="new-interview-modal"><div class="modal modal-xl">
+  <div class="mhead"><div><div class="mtitle" id="ni-title">Nueva entrevista de desarrollo</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Formulario de desarrollo profesional y carrera</div></div><button class="btn btn-ghost btn-icon btn-sm" onclick="closeModal('new-interview-modal')">✕</button></div>
+  <div class="mbody">
+    <div class="frow3"><div class="fg"><label class="flbl">Empleado *</label><select class="fi" id="ni-emp"></select></div><div class="fg"><label class="flbl">Entrevistador</label><input class="fi" id="ni-interviewer" placeholder="Nombre del responsable"></div><div class="fg"><label class="flbl">Fecha</label><input class="fi" id="ni-date" type="date"></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Tipo de entrevista</label><select class="fi" id="ni-type"><option>Desarrollo Profesional</option><option>1:1 Seguimiento</option><option>Evaluación 360</option><option>Plan de Carrera</option><option>Feedback Anual</option></select></div><div class="fg"><label class="flbl">Próxima revisión</label><input class="fi" id="ni-next" type="date"></div></div>
+    <div class="divider"></div>
+    <div class="frow"><div class="fg"><label class="flbl">Fortalezas observadas</label><textarea class="fi" id="ni-str" style="min-height:70px" placeholder="¿Qué hace muy bien? ¿Dónde destaca?"></textarea></div><div class="fg"><label class="flbl">Áreas de mejora</label><textarea class="fi" id="ni-imp" style="min-height:70px" placeholder="¿Qué podría desarrollar o mejorar?"></textarea></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Objetivos de carrera (1-3 años)</label><textarea class="fi" id="ni-goals" style="min-height:70px" placeholder="¿A dónde quiere llegar? ¿Qué rol aspira?"></textarea></div><div class="fg"><label class="flbl">Habilidades a desarrollar</label><textarea class="fi" id="ni-skills" style="min-height:70px" placeholder="Cursos, certificaciones, experiencias..."></textarea></div></div>
+    <div class="frow"><div class="fg"><label class="flbl">Logros del período</label><textarea class="fi" id="ni-ach" style="min-height:60px" placeholder="Hitos, proyectos, reconocimientos..."></textarea></div><div class="fg"><label class="flbl">Soporte necesario</label><textarea class="fi" id="ni-sup" style="min-height:60px" placeholder="¿Qué necesita de la organización o su líder?"></textarea></div></div>
+    <div class="fg"><label class="flbl">Acciones acordadas</label><textarea class="fi" id="ni-actions" style="min-height:60px" placeholder="Compromisos concretos con fecha..."></textarea></div>
+    <div class="divider"></div>
+    <div class="frow">
+      <div class="fg"><label class="flbl">Nivel de motivación</label>
+        <div class="score-row" id="ni-motiv-row">
+          <script>for(let i=1;i<=10;i++)document.write(`<button type="button" class="score-btn" data-v="${i}" onclick="selectScore('ni-motiv',${i})">${i}</button>`)</script>
+        </div><input type="hidden" id="ni-motiv" value="">
+      </div>
+      <div class="fg"><label class="flbl">Nivel de compromiso</label>
+        <div class="score-row" id="ni-eng-row">
+          <script>for(let i=1;i<=10;i++)document.write(`<button type="button" class="score-btn" data-v="${i}" onclick="selectScore('ni-eng',${i})">${i}</button>`)</script>
+        </div><input type="hidden" id="ni-eng" value="">
+      </div>
+    </div>
+    <div class="fg"><label class="flbl">Notas adicionales</label><textarea class="fi" id="ni-notes" style="min-height:55px"></textarea></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('new-interview-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveInterview()">Guardar entrevista</button></div>
+</div></div>
+
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
 
 <script>
@@ -590,7 +713,7 @@ async function signInWithGoogle() {
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
-      scopes: 'openid email profile'
+      scopes: 'openid email profile https://www.googleapis.com/auth/gmail.compose'
     }
   })
 }
@@ -627,7 +750,8 @@ function showLoading(v) {
 // ═══════════════════════════════════════════════════
 const S = {
   employees: [], onboardings: [], surveys: [], roadmaps: [],
-  plans: [], templates: [], currentEmpId: null
+  plans: [], templates: [], courses: [], empCourses: [], interviews: [],
+  currentEmpId: null, editCourseId: null, editInterviewId: null
 }
 
 const COLORS = ['#1D6AE5','#0F8A74','#6B3FA0','#C0392B','#1A7A42','#B45309','#0891B2','#059669','#7C3AED','#C2410C']
@@ -644,13 +768,16 @@ async function loadAllData() {
     return
   }
   try {
-    const [emps, obs, svs, rms, plans, tmpls] = await Promise.all([
+    const [emps, obs, svs, rms, plans, tmpls, crss, empCrss, ivs] = await Promise.all([
       supabaseClient.from('employees').select('*').order('created_at'),
       supabaseClient.from('onboardings').select('*, onboarding_activities(*), employees(id,name,lastname,role,color)').order('created_at'),
       supabaseClient.from('surveys').select('*, employees(name,lastname,color)').order('date', {ascending: false}),
       supabaseClient.from('roadmaps').select('*').order('created_at'),
       supabaseClient.from('plans').select('*, employees(name,lastname), roadmaps(name)').order('created_at'),
-      supabaseClient.from('onboarding_templates').select('*, onboarding_template_activities(*)').order('created_at')
+      supabaseClient.from('onboarding_templates').select('*, onboarding_template_activities(*)').order('created_at'),
+      supabaseClient.from('courses').select('*').order('created_at'),
+      supabaseClient.from('employee_courses').select('*, employees(name,lastname,color,area), courses(name,category,duration)').order('created_at', {ascending: false}),
+      supabaseClient.from('interviews').select('*, employees(name,lastname,color,role)').order('date', {ascending: false})
     ])
     S.employees = emps.data || []
     S.onboardings = (obs.data || []).map(ob => ({
@@ -660,6 +787,9 @@ async function loadAllData() {
     S.roadmaps = rms.data || []
     S.plans = plans.data || []
     S.templates = tmpls.data || []
+    S.courses = crss.data || []
+    S.empCourses = empCrss.data || []
+    S.interviews = ivs.data || []
     initUI()
   } catch(e) {
     console.error('Load error:', e)
@@ -677,8 +807,12 @@ function initUI() {
   filterSurveys()
   renderRoadmaps()
   renderPlans()
+  renderCourseCatalog()
+  renderCourseAssignments()
+  renderInterviews()
   populateFilters()
   populateTemplateSelects()
+  populateIvSelects()
 }
 
 // ═══════════════════════════════════════════════════
@@ -1567,13 +1701,15 @@ function showPage(p) {
   if (pg) pg.classList.add('active')
   const ni = document.querySelector(`.nav-item[data-page="${p}"]`)
   if (ni) ni.classList.add('active')
-  const titles = {dashboard:'Dashboard',employees:'Empleados',profile:'Perfil',onboarding:'Onboarding',surveys:'Encuestas 1:1',roadmaps:'Roadmaps',plans:'Planes asignados',metrics:'Métricas'}
+  const titles = {dashboard:'Dashboard',employees:'Empleados',profile:'Perfil',onboarding:'Onboarding',surveys:'Encuestas 1:1',roadmaps:'Roadmaps',plans:'Planes asignados',metrics:'Métricas',cursos:'Cursos',entrevistas:'Entrevistas de Desarrollo'}
   document.getElementById('topbar-title').textContent = titles[p] || p
   if (p==='onboarding') { renderOnboarding(); renderTemplatesList() }
   if (p==='surveys') filterSurveys()
   if (p==='roadmaps') renderRoadmaps()
   if (p==='plans') { populateAssignSelects(); renderPlans() }
   if (p==='dashboard') renderDashboard()
+  if (p==='cursos') { renderCourseCatalog(); renderCourseAssignments() }
+  if (p==='entrevistas') { renderInterviews(); populateIvSelects() }
 }
 
 document.querySelectorAll('.nav-item[data-page]').forEach(el => {
@@ -1605,6 +1741,24 @@ function openModal(id) {
   }
   if (id==='assign-modal') populateAssignSelects()
   if (id==='ob-templates-modal') renderTemplatesList()
+  if (id==='assign-course-modal') populateCourseAssignSelects()
+  if (id==='new-course-modal') {
+    if (!S.editCourseId) {
+      document.getElementById('nc-title').textContent = 'Nuevo curso'
+      ;['nc-name','nc-provider','nc-dur','nc-url','nc-desc','nc-tags'].forEach(f => { const el=document.getElementById(f); if(el) el.value='' })
+      document.getElementById('nc-cat').value = 'Tecnología'
+    }
+  }
+  if (id==='new-interview-modal') {
+    if (!S.editInterviewId) {
+      document.getElementById('ni-title').textContent = 'Nueva entrevista de desarrollo'
+      ;['ni-interviewer','ni-str','ni-imp','ni-goals','ni-skills','ni-ach','ni-sup','ni-actions','ni-notes','ni-motiv','ni-eng'].forEach(f => { const el=document.getElementById(f); if(el) el.value='' })
+      document.getElementById('ni-date').value = today()
+      document.getElementById('ni-next').value = ''
+      document.querySelectorAll('#ni-motiv-row .score-btn, #ni-eng-row .score-btn').forEach(b=>b.classList.remove('sel'))
+    }
+    populateIvSelects()
+  }
 }
 
 function closeModal(id) { document.getElementById(id)?.classList.remove('open') }
@@ -1638,6 +1792,8 @@ function updateCounters() {
   document.getElementById('nb-emp').textContent = S.employees.length
   document.getElementById('nb-sv').textContent = S.surveys.length
   document.getElementById('nb-ob').textContent = S.onboardings.filter(o=>o.status==='En proceso').length
+  document.getElementById('nb-cursos').textContent = S.empCourses.filter(c=>c.status==='En curso').length
+  document.getElementById('nb-iv').textContent = S.interviews.length
 }
 
 function populateFilters() {
@@ -1672,6 +1828,461 @@ function populateAssignSelects() {
   const apStart = document.getElementById('ap-start'), apEnd = document.getElementById('ap-end')
   if (apStart) apStart.value = today()
   if (apEnd) { const d=new Date(); d.setFullYear(d.getFullYear()+1); apEnd.value=d.toISOString().split('T')[0] }
+}
+
+// ═══════════════════════════════════════════════════
+// CURSOS — CATÁLOGO
+// ═══════════════════════════════════════════════════
+function switchCourseTab(tab, el) {
+  document.querySelectorAll('#course-stabs .stab').forEach(s => s.classList.remove('active'))
+  el.classList.add('active')
+  document.getElementById('cursos-catalogo').style.display = tab==='catalogo' ? '' : 'none'
+  document.getElementById('cursos-asignaciones').style.display = tab==='asignaciones' ? '' : 'none'
+}
+
+function renderCourseCatalog() {
+  const el = document.getElementById('cursos-catalogo')
+  if (!el) return
+  if (!S.courses.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">📚</div><div class="empty-t">Sin cursos en el catálogo</div><div style="font-size:12px">Añade cursos para luego asignarlos a tus empleados</div></div>`
+    return
+  }
+  el.innerHTML = `<div class="g3">${S.courses.map(c => `
+    <div class="course-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <span class="cc-tag cc-${(c.category||'General').split(' ')[0]}">${escH(c.category||'General')}</span>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-xs" onclick="openAssignFromCourse('${c.id}')">+ Asignar</button>
+          <button class="btn btn-ghost btn-xs" onclick="editCourse('${c.id}')">✏</button>
+          <button class="btn btn-ghost btn-xs" onclick="deleteCourse('${c.id}')">✕</button>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">${escH(c.name)}</div>
+      ${c.provider ? `<div style="font-size:11.5px;color:var(--text3);margin-bottom:6px">${escH(c.provider)}</div>` : ''}
+      ${c.description ? `<div style="font-size:12px;color:var(--text2);margin-bottom:8px;flex:1">${escH(c.description)}</div>` : ''}
+      <div style="display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">
+        ${c.duration ? `<span style="font-size:11px;color:var(--text3)">⏱ ${escH(c.duration)}</span>` : ''}
+        ${c.url ? `<a href="${escH(c.url)}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs" style="margin-left:auto">Ver →</a>` : ''}
+        <span style="font-size:10px;color:var(--text4);${c.url?'':'margin-left:auto'}">${(S.empCourses.filter(ec=>ec.course_id===c.id)).length} asign.</span>
+      </div>
+    </div>`).join('')}</div>`
+}
+
+function renderCourseAssignments() {
+  const el = document.getElementById('cursos-asignaciones')
+  if (!el) return
+  if (!S.empCourses.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">Sin asignaciones</div><div style="font-size:12px">Asigna cursos a tus empleados desde el catálogo</div></div>`
+    return
+  }
+  // Group by employee
+  const byEmp = {}
+  S.empCourses.forEach(ec => {
+    if (!byEmp[ec.employee_id]) byEmp[ec.employee_id] = { emp: ec.employees, items: [] }
+    byEmp[ec.employee_id].items.push(ec)
+  })
+  el.innerHTML = Object.values(byEmp).map(g => {
+    const e = g.emp || {}
+    return `<div class="ob-card" style="margin-bottom:12px">
+      <div class="ob-card-header" style="display:flex;align-items:center;gap:10px">
+        <div class="av-sm" style="background:${e.color||'#1D6AE5'}">${((e.name||'')[0]+(e.lastname||'')[0]).toUpperCase()}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600">${escH(e.name||'')} ${escH(e.lastname||'')}</div><div style="font-size:11px;color:var(--text3)">${escH(e.area||'')}</div></div>
+        <span style="font-size:11px;color:var(--text3)">${g.items.length} curso${g.items.length!==1?'s':''}</span>
+      </div>
+      <div class="ob-card-body" style="padding:0">
+        <table style="width:100%">
+          <thead><tr><th>Curso</th><th>Categoría</th><th>Estado</th><th>Fecha límite</th><th></th></tr></thead>
+          <tbody>${g.items.map(ec => {
+            const st = ec.status || 'Pendiente'
+            const stClass = 'st-'+st.split(' ')[0]
+            return `<tr>
+              <td><div style="font-weight:500">${escH(ec.courses?.name||'')}</div>${ec.notes?`<div style="font-size:11px;color:var(--text3)">${escH(ec.notes)}</div>`:''}</td>
+              <td><span class="cc-tag cc-${(ec.courses?.category||'General').split(' ')[0]}">${escH(ec.courses?.category||'General')}</span></td>
+              <td><span class="${stClass}">${st}</span></td>
+              <td style="font-size:12px;color:var(--text3)">${ec.due_date||'—'}</td>
+              <td>
+                <select class="fi fi-sm" style="width:110px" onchange="updateAssignStatus('${ec.id}',this.value)">
+                  ${['Pendiente','En curso','Completado','Cancelado'].map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </td>
+            </tr>`
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function openAssignFromCourse(courseId) {
+  openModal('assign-course-modal')
+  setTimeout(() => {
+    const sel = document.getElementById('ac-course')
+    if (sel) sel.value = courseId
+  }, 50)
+}
+
+async function saveCourse() {
+  const name = document.getElementById('nc-name').value.trim()
+  if (!name) { showToast('El nombre es obligatorio','err'); return }
+  const course = {
+    name,
+    provider: document.getElementById('nc-provider').value.trim() || null,
+    category: document.getElementById('nc-cat').value,
+    duration: document.getElementById('nc-dur').value.trim() || null,
+    url: document.getElementById('nc-url').value.trim() || null,
+    description: document.getElementById('nc-desc').value.trim() || null,
+    tags: document.getElementById('nc-tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+  }
+  if (supabaseClient) {
+    if (S.editCourseId) {
+      const { data, error } = await supabaseClient.from('courses').update(course).eq('id', S.editCourseId).select().single()
+      if (error) { showToast('Error: '+error.message,'err'); return }
+      const idx = S.courses.findIndex(c=>c.id===S.editCourseId)
+      if (idx>=0) S.courses[idx] = data
+    } else {
+      const { data, error } = await supabaseClient.from('courses').insert([course]).select().single()
+      if (error) { showToast('Error: '+error.message,'err'); return }
+      S.courses.push(data)
+    }
+  } else {
+    course.id = 'demo-c-'+Date.now()
+    S.editCourseId ? (S.courses[S.courses.findIndex(c=>c.id===S.editCourseId)] = {...course, id:S.editCourseId}) : S.courses.push(course)
+  }
+  S.editCourseId = null
+  closeModal('new-course-modal')
+  renderCourseCatalog()
+  updateCounters()
+  showToast(S.editCourseId ? 'Curso actualizado' : 'Curso añadido al catálogo','ok')
+}
+
+function editCourse(id) {
+  const c = S.courses.find(x=>x.id===id)
+  if (!c) return
+  S.editCourseId = id
+  document.getElementById('nc-title').textContent = 'Editar curso'
+  document.getElementById('nc-name').value = c.name||''
+  document.getElementById('nc-provider').value = c.provider||''
+  document.getElementById('nc-cat').value = c.category||'General'
+  document.getElementById('nc-dur').value = c.duration||''
+  document.getElementById('nc-url').value = c.url||''
+  document.getElementById('nc-desc').value = c.description||''
+  document.getElementById('nc-tags').value = (c.tags||[]).join(', ')
+  openModal('new-course-modal')
+}
+
+async function deleteCourse(id) {
+  if (!confirm('¿Eliminar este curso del catálogo?')) return
+  if (supabaseClient) {
+    await supabaseClient.from('courses').delete().eq('id', id)
+  }
+  S.courses = S.courses.filter(c=>c.id!==id)
+  renderCourseCatalog(); updateCounters()
+  showToast('Curso eliminado','ok')
+}
+
+async function saveAssignment() {
+  const empId = document.getElementById('ac-emp').value
+  const courseId = document.getElementById('ac-course').value
+  if (!empId || !courseId) { showToast('Selecciona empleado y curso','err'); return }
+  const notify = document.getElementById('ac-notify').checked
+  const assignment = {
+    employee_id: empId,
+    course_id: courseId,
+    roadmap_id: document.getElementById('ac-roadmap').value || null,
+    status: document.getElementById('ac-status').value,
+    due_date: document.getElementById('ac-due').value || null,
+    notes: document.getElementById('ac-notes').value.trim() || null,
+    assigned_date: today()
+  }
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient
+      .from('employee_courses').insert([assignment]).select('*, employees(name,lastname,color,area), courses(name,category,duration)').single()
+    if (error) { showToast(error.code==='23505'?'Este curso ya está asignado al empleado':'Error: '+error.message,'err'); return }
+    S.empCourses.unshift(data)
+  } else {
+    const emp = S.employees.find(e=>e.id===empId)
+    const course = S.courses.find(c=>c.id===courseId)
+    S.empCourses.unshift({...assignment, id:'demo-ec-'+Date.now(), employees:emp, courses:course})
+  }
+  closeModal('assign-course-modal')
+  renderCourseAssignments(); updateCounters()
+  showToast('Curso asignado','ok')
+  if (notify) {
+    const emp = S.employees.find(e=>e.id===empId)
+    const course = S.courses.find(c=>c.id===courseId)
+    if (emp?.email && course) sendCourseEmail(emp, course, assignment.due_date)
+  }
+}
+
+async function updateAssignStatus(id, status) {
+  if (supabaseClient) {
+    const upd = { status }
+    if (status==='Completado') upd.completed_date = today()
+    await supabaseClient.from('employee_courses').update(upd).eq('id', id)
+  }
+  const ec = S.empCourses.find(x=>x.id===id)
+  if (ec) ec.status = status
+  showToast('Estado actualizado','ok')
+}
+
+function suggestCoursesByRoadmap() {
+  const empId = document.getElementById('ac-emp').value
+  const emp = S.employees.find(e=>e.id===empId)
+  const plan = S.plans.find(p=>p.employee_id===empId)
+  const sug = document.getElementById('ac-suggestion')
+  if (plan?.roadmaps?.name) {
+    sug.style.display = ''
+    sug.textContent = `💡 Este empleado tiene el roadmap "${plan.roadmaps.name}" asignado. Se preseleccionará en la asignación.`
+    const rmSel = document.getElementById('ac-roadmap')
+    if (rmSel) {
+      const opt = Array.from(rmSel.options).find(o => o.text === plan.roadmaps.name)
+      if (opt) rmSel.value = opt.value
+    }
+  } else {
+    sug.style.display = 'none'
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// ENTREVISTAS DE DESARROLLO
+// ═══════════════════════════════════════════════════
+function selectScore(field, val) {
+  document.getElementById(field).value = val
+  document.querySelectorAll(`#${field}-row .score-btn`).forEach(b => {
+    b.classList.toggle('sel', +b.dataset.v === val)
+  })
+}
+
+function renderInterviews() {
+  const el = document.getElementById('interviews-list')
+  if (!el) return
+  const empFilter = document.getElementById('iv-filter-emp')?.value || ''
+  const typeFilter = document.getElementById('iv-filter-type')?.value || ''
+  let ivs = S.interviews
+  if (empFilter) ivs = ivs.filter(iv => iv.employee_id === empFilter)
+  if (typeFilter) ivs = ivs.filter(iv => iv.type === typeFilter)
+  if (!ivs.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">Sin entrevistas registradas</div><div style="font-size:12px">Crea la primera entrevista de desarrollo profesional</div></div>`
+    return
+  }
+  el.innerHTML = ivs.map(iv => {
+    const e = iv.employees || {}
+    const typeColors = {'Desarrollo Profesional':'b-blue','1:1 Seguimiento':'b-teal','Evaluación 360':'b-purple','Plan de Carrera':'b-amber','Feedback Anual':'b-green'}
+    const bc = typeColors[iv.type] || 'b-gray'
+    const scores = []
+    if (iv.motivation_score) scores.push(`Motivación: <strong>${iv.motivation_score}/10</strong>`)
+    if (iv.engagement_score) scores.push(`Compromiso: <strong>${iv.engagement_score}/10</strong>`)
+    return `<div class="iv-card">
+      <div class="iv-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="av-sm" style="background:${e.color||'#1D6AE5'}">${((e.name||'')[0]+(e.lastname||'')[0]).toUpperCase()}</div>
+          <div><div style="font-size:13px;font-weight:600">${escH(e.name||'')} ${escH(e.lastname||'')}</div>
+          <div style="font-size:11px;color:var(--text3)">${escH(e.role||'')} · ${iv.date}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge ${bc}">${escH(iv.type)}</span>
+          ${scores.length ? `<span style="font-size:11.5px;color:var(--text2)">${scores.join(' · ')}</span>` : ''}
+          <button class="btn btn-ghost btn-xs" onclick="sendInterviewEmailFor('${iv.id}')">📧</button>
+          <button class="btn btn-ghost btn-xs" onclick="editInterview('${iv.id}')">✏</button>
+          <button class="btn btn-ghost btn-xs" onclick="deleteInterview('${iv.id}')">✕</button>
+        </div>
+      </div>
+      <div class="iv-body">
+        ${iv.strengths ? `<div><div class="iv-q">Fortalezas</div><div class="iv-a">${escH(iv.strengths)}</div></div>` : ''}
+        ${iv.improvement_areas ? `<div><div class="iv-q">Áreas de mejora</div><div class="iv-a">${escH(iv.improvement_areas)}</div></div>` : ''}
+        ${iv.career_goals ? `<div><div class="iv-q">Objetivos de carrera</div><div class="iv-a">${escH(iv.career_goals)}</div></div>` : ''}
+        ${iv.skills_to_develop ? `<div><div class="iv-q">Habilidades a desarrollar</div><div class="iv-a">${escH(iv.skills_to_develop)}</div></div>` : ''}
+        ${iv.achievements ? `<div><div class="iv-q">Logros del período</div><div class="iv-a">${escH(iv.achievements)}</div></div>` : ''}
+        ${iv.support_needed ? `<div><div class="iv-q">Soporte necesario</div><div class="iv-a">${escH(iv.support_needed)}</div></div>` : ''}
+        ${iv.agreed_actions ? `<div class="iv-full"><div class="iv-q">Acciones acordadas</div><div class="iv-a">${escH(iv.agreed_actions)}</div></div>` : ''}
+        ${iv.notes ? `<div class="iv-full"><div class="iv-q">Notas</div><div class="iv-a">${escH(iv.notes)}</div></div>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function populateIvSelects() {
+  const empSel = document.getElementById('ni-emp')
+  const empFilter = document.getElementById('iv-filter-emp')
+  const opts = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname} — ${e.area}</option>`).join('')
+  if (empSel) empSel.innerHTML = '<option value="">— seleccionar —</option>'+opts
+  if (empFilter) empFilter.innerHTML = '<option value="">Todos los empleados</option>'+opts
+}
+
+async function saveInterview() {
+  const empId = document.getElementById('ni-emp').value
+  if (!empId) { showToast('Selecciona un empleado','err'); return }
+  const iv = {
+    employee_id: empId,
+    interviewer: document.getElementById('ni-interviewer').value.trim() || null,
+    date: document.getElementById('ni-date').value || today(),
+    type: document.getElementById('ni-type').value,
+    next_review_date: document.getElementById('ni-next').value || null,
+    strengths: document.getElementById('ni-str').value.trim() || null,
+    improvement_areas: document.getElementById('ni-imp').value.trim() || null,
+    career_goals: document.getElementById('ni-goals').value.trim() || null,
+    skills_to_develop: document.getElementById('ni-skills').value.trim() || null,
+    achievements: document.getElementById('ni-ach').value.trim() || null,
+    support_needed: document.getElementById('ni-sup').value.trim() || null,
+    agreed_actions: document.getElementById('ni-actions').value.trim() || null,
+    motivation_score: document.getElementById('ni-motiv').value ? +document.getElementById('ni-motiv').value : null,
+    engagement_score: document.getElementById('ni-eng').value ? +document.getElementById('ni-eng').value : null,
+    notes: document.getElementById('ni-notes').value.trim() || null
+  }
+  if (supabaseClient) {
+    if (S.editInterviewId) {
+      const { data, error } = await supabaseClient.from('interviews').update(iv).eq('id', S.editInterviewId).select('*, employees(name,lastname,color,role)').single()
+      if (error) { showToast('Error: '+error.message,'err'); return }
+      const idx = S.interviews.findIndex(x=>x.id===S.editInterviewId)
+      if (idx>=0) S.interviews[idx] = data
+    } else {
+      const { data, error } = await supabaseClient.from('interviews').insert([iv]).select('*, employees(name,lastname,color,role)').single()
+      if (error) { showToast('Error: '+error.message,'err'); return }
+      S.interviews.unshift(data)
+    }
+  } else {
+    const emp = S.employees.find(e=>e.id===empId)
+    iv.id = 'demo-iv-'+Date.now(); iv.employees = emp
+    S.editInterviewId ? (S.interviews[S.interviews.findIndex(x=>x.id===S.editInterviewId)] = iv) : S.interviews.unshift(iv)
+  }
+  S.editInterviewId = null
+  closeModal('new-interview-modal')
+  renderInterviews(); updateCounters()
+  showToast('Entrevista guardada','ok')
+}
+
+function editInterview(id) {
+  const iv = S.interviews.find(x=>x.id===id)
+  if (!iv) return
+  S.editInterviewId = id
+  openModal('new-interview-modal')
+  setTimeout(() => {
+    document.getElementById('ni-title').textContent = 'Editar entrevista'
+    document.getElementById('ni-emp').value = iv.employee_id||''
+    document.getElementById('ni-interviewer').value = iv.interviewer||''
+    document.getElementById('ni-date').value = iv.date||today()
+    document.getElementById('ni-type').value = iv.type||'Desarrollo Profesional'
+    document.getElementById('ni-next').value = iv.next_review_date||''
+    document.getElementById('ni-str').value = iv.strengths||''
+    document.getElementById('ni-imp').value = iv.improvement_areas||''
+    document.getElementById('ni-goals').value = iv.career_goals||''
+    document.getElementById('ni-skills').value = iv.skills_to_develop||''
+    document.getElementById('ni-ach').value = iv.achievements||''
+    document.getElementById('ni-sup').value = iv.support_needed||''
+    document.getElementById('ni-actions').value = iv.agreed_actions||''
+    document.getElementById('ni-notes').value = iv.notes||''
+    if (iv.motivation_score) selectScore('ni-motiv', iv.motivation_score)
+    if (iv.engagement_score) selectScore('ni-eng', iv.engagement_score)
+  }, 50)
+}
+
+async function deleteInterview(id) {
+  if (!confirm('¿Eliminar esta entrevista?')) return
+  if (supabaseClient) await supabaseClient.from('interviews').delete().eq('id', id)
+  S.interviews = S.interviews.filter(x=>x.id!==id)
+  renderInterviews(); updateCounters()
+  showToast('Entrevista eliminada','ok')
+}
+
+// ═══════════════════════════════════════════════════
+// GMAIL INTEGRATION
+// ═══════════════════════════════════════════════════
+async function getGmailToken() {
+  if (!supabaseClient) return null
+  const { data: { session } } = await supabaseClient.auth.getSession()
+  if (!session?.provider_token) {
+    showToast('Reconecta con Google para usar Gmail (cierra sesión y vuelve a entrar)','err')
+    return null
+  }
+  return session.provider_token
+}
+
+async function sendGmail(to, subject, htmlBody) {
+  const token = await getGmailToken()
+  if (!token) return false
+  const msg = [`To: ${to}`,`Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,'MIME-Version: 1.0','Content-Type: text/html; charset=UTF-8','',''+htmlBody].join('\r\n')
+  const encoded = btoa(unescape(encodeURIComponent(msg))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')
+  try {
+    const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer '+token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ raw: encoded })
+    })
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || res.status) }
+    return true
+  } catch(e) {
+    showToast('Error Gmail: '+e.message,'err')
+    return false
+  }
+}
+
+async function sendCourseEmail(emp, course, dueDate) {
+  if (!emp?.email) { showToast('El empleado no tiene email registrado','err'); return }
+  const subject = `📚 Nuevo curso asignado: ${course.name}`
+  const body = `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+    <h2 style="color:#1D6AE5">Nuevo curso asignado</h2>
+    <p>Hola <strong>${emp.name}</strong>,</p>
+    <p>Se te ha asignado el siguiente curso en tu plan de desarrollo:</p>
+    <div style="background:#EEF3FD;border-radius:8px;padding:16px;margin:16px 0">
+      <h3 style="margin:0 0 8px;color:#1D6AE5">${course.name}</h3>
+      ${course.provider ? `<p style="margin:4px 0;color:#555">🏫 ${course.provider}</p>` : ''}
+      ${course.duration ? `<p style="margin:4px 0;color:#555">⏱ Duración: ${course.duration}</p>` : ''}
+      ${dueDate ? `<p style="margin:4px 0;color:#555">📅 Fecha límite: ${dueDate}</p>` : ''}
+      ${course.url ? `<p style="margin:12px 0 0"><a href="${course.url}" style="background:#1D6AE5;color:#fff;padding:8px 16px;border-radius:6px;text-decoration:none">Acceder al curso →</a></p>` : ''}
+    </div>
+    <p style="color:#888;font-size:12px">Este mensaje fue enviado desde TalentMap.</p>
+  </div>`
+  const ok = await sendGmail(emp.email, subject, body)
+  if (ok) showToast(`Email enviado a ${emp.email}`,'ok')
+}
+
+async function sendInterviewEmailFor(ivId) {
+  const iv = S.interviews.find(x=>x.id===ivId)
+  if (!iv) return
+  const emp = S.employees.find(e=>e.id===iv.employee_id) || iv.employees || {}
+  if (!emp.email) { showToast('El empleado no tiene email registrado','err'); return }
+  const subject = `📋 Resumen entrevista de desarrollo — ${iv.date}`
+  const rows = [
+    ['Fortalezas', iv.strengths],
+    ['Áreas de mejora', iv.improvement_areas],
+    ['Objetivos de carrera', iv.career_goals],
+    ['Habilidades a desarrollar', iv.skills_to_develop],
+    ['Logros del período', iv.achievements],
+    ['Acciones acordadas', iv.agreed_actions]
+  ].filter(r=>r[1]).map(r=>`<tr><td style="font-weight:600;padding:8px 12px;background:#f5f5f5;width:180px;vertical-align:top">${r[0]}</td><td style="padding:8px 12px">${r[1]}</td></tr>`).join('')
+  const scores = [iv.motivation_score&&`Motivación: <strong>${iv.motivation_score}/10</strong>`,iv.engagement_score&&`Compromiso: <strong>${iv.engagement_score}/10</strong>`].filter(Boolean).join(' · ')
+  const body = `<div style="font-family:sans-serif;max-width:640px;margin:0 auto">
+    <h2 style="color:#1D6AE5">Resumen de entrevista de desarrollo</h2>
+    <p>Hola <strong>${emp.name}</strong>, aquí está el resumen de tu entrevista del <strong>${iv.date}</strong>.</p>
+    ${scores ? `<p style="background:#EEF3FD;padding:10px;border-radius:6px">${scores}</p>` : ''}
+    <table style="width:100%;border-collapse:collapse;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">${rows}</table>
+    ${iv.next_review_date ? `<p style="margin-top:16px">📅 Próxima revisión: <strong>${iv.next_review_date}</strong></p>` : ''}
+    <p style="color:#888;font-size:12px;margin-top:24px">Enviado desde TalentMap</p>
+  </div>`
+  const ok = await sendGmail(emp.email, subject, body)
+  if (ok) showToast(`Resumen enviado a ${emp.email}`,'ok')
+}
+
+async function sendInterviewEmail() {
+  const empFilter = document.getElementById('iv-filter-emp')?.value
+  if (!empFilter) { showToast('Filtra por un empleado primero','err'); return }
+  const emp = S.employees.find(e=>e.id===empFilter)
+  if (!emp?.email) { showToast('El empleado no tiene email registrado','err'); return }
+  const latestIv = S.interviews.find(iv=>iv.employee_id===empFilter)
+  if (latestIv) { sendInterviewEmailFor(latestIv.id); return }
+  showToast('No hay entrevistas para este empleado','err')
+}
+
+// ─── populate selects for assign-course-modal ─────
+function populateCourseAssignSelects() {
+  const empSel = document.getElementById('ac-emp')
+  const courseSel = document.getElementById('ac-course')
+  const rmSel = document.getElementById('ac-roadmap')
+  if (empSel) empSel.innerHTML = S.employees.map(e=>`<option value="${e.id}">${e.name} ${e.lastname} — ${e.area}</option>`).join('')
+  if (courseSel) courseSel.innerHTML = S.courses.map(c=>`<option value="${c.id}">${c.name}${c.provider?' ('+c.provider+')':''}</option>`).join('')
+  if (rmSel) rmSel.innerHTML = '<option value="">— ninguno —</option>'+S.roadmaps.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')
+  const acDue = document.getElementById('ac-due')
+  if (acDue) { const d=new Date(); d.setMonth(d.getMonth()+1); acDue.value=d.toISOString().split('T')[0] }
 }
 
 // ═══════════════════════════════════════════════════
