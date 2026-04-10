@@ -535,10 +535,10 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 const SUPABASE_URL = "https://ycerlcwnrsepbfzafwsc.supabase.co"
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZXJsY3ducnNlcGJmemFmd3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MjQyMzYsImV4cCI6MjA5MTQwMDIzNn0.h0FgkyhvuNHnI4Pvfy0Tyinfhl5ECxyfJM_OPhyTjbM"
 
-let supabase = null
+let supabaseClient = null
 try {
   if (SUPABASE_URL && SUPABASE_ANON) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
   }
 } catch(e) { console.warn('Supabase not configured:', e) }
 
@@ -549,7 +549,7 @@ let currentUser = null
 
 async function checkAuth() {
   showLoading(true)
-  if (!supabase) {
+  if (!supabaseClient) {
     // Modo demo sin Supabase
     document.getElementById('auth-screen').style.display = 'none'
     document.getElementById('app').style.display = 'flex'
@@ -560,7 +560,7 @@ async function checkAuth() {
     await loadAllData()
     return
   }
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { session } } = await supabaseClient.auth.getSession()
   if (session) {
     currentUser = session.user
     showApp()
@@ -570,7 +570,7 @@ async function checkAuth() {
   }
   showLoading(false)
 
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user
       showApp()
@@ -585,8 +585,8 @@ async function checkAuth() {
 }
 
 async function signInWithGoogle() {
-  if (!supabase) { showToast('Configura Supabase primero','err'); return }
-  await supabase.auth.signInWithOAuth({
+  if (!supabaseClient) { showToast('Configura Supabase primero','err'); return }
+  await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
@@ -596,7 +596,7 @@ async function signInWithGoogle() {
 }
 
 async function signOut() {
-  if (supabase) await supabase.auth.signOut()
+  if (supabaseClient) await supabaseClient.auth.signOut()
   else { showAuthScreen() }
 }
 
@@ -638,19 +638,19 @@ const LVL_B = {Junior:'b-green',Mid:'b-blue',Senior:'b-amber',Lead:'b-purple',Ma
 // LOAD DATA FROM SUPABASE
 // ═══════════════════════════════════════════════════
 async function loadAllData() {
-  if (!supabase) {
+  if (!supabaseClient) {
     seedDemoData()
     initUI()
     return
   }
   try {
     const [emps, obs, svs, rms, plans, tmpls] = await Promise.all([
-      supabase.from('employees').select('*').order('created_at'),
-      supabase.from('onboardings').select('*, onboarding_activities(*), employees(id,name,lastname,role,color)').order('created_at'),
-      supabase.from('surveys').select('*, employees(name,lastname,color)').order('date', {ascending: false}),
-      supabase.from('roadmaps').select('*').order('created_at'),
-      supabase.from('plans').select('*, employees(name,lastname), roadmaps(name)').order('created_at'),
-      supabase.from('onboarding_templates').select('*, onboarding_template_activities(*)').order('created_at')
+      supabaseClient.from('employees').select('*').order('created_at'),
+      supabaseClient.from('onboardings').select('*, onboarding_activities(*), employees(id,name,lastname,role,color)').order('created_at'),
+      supabaseClient.from('surveys').select('*, employees(name,lastname,color)').order('date', {ascending: false}),
+      supabaseClient.from('roadmaps').select('*').order('created_at'),
+      supabaseClient.from('plans').select('*, employees(name,lastname), roadmaps(name)').order('created_at'),
+      supabaseClient.from('onboarding_templates').select('*, onboarding_template_activities(*)').order('created_at')
     ])
     S.employees = emps.data || []
     S.onboardings = (obs.data || []).map(ob => ({
@@ -751,9 +751,9 @@ async function saveEmployee() {
   }
 
   let newEmp
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      const { data, error } = await supabase.from('employees').insert([emp]).select().single()
+      const { data, error } = await supabaseClient.from('employees').insert([emp]).select().single()
       if (error) throw error
       newEmp = data
       S.employees.push(newEmp)
@@ -783,8 +783,8 @@ async function saveEmployee() {
 async function createOnboardingForEmployee(empId, startDate, site, templateId) {
   const ob = { employee_id: empId, start_date: startDate, duration: '90 días', mentor: 'RRHH', site, status: 'En proceso', progress: 0 }
   let newOb
-  if (supabase) {
-    const { data } = await supabase.from('onboardings').insert([ob]).select().single()
+  if (supabaseClient) {
+    const { data } = await supabaseClient.from('onboardings').insert([ob]).select().single()
     newOb = { ...data, activities: [], employees: S.employees.find(e=>e.id===empId) }
     // Aplicar template si se seleccionó
     if (templateId) {
@@ -796,7 +796,7 @@ async function createOnboardingForEmployee(empId, startDate, site, templateId) {
           due.setDate(due.getDate() + (a.day_offset||0))
           return { onboarding_id: newOb.id, name: a.name, description: a.description, category: a.category, responsible: a.responsible, due_date: due.toISOString().split('T')[0], order_index: i, done: false }
         })
-        const { data: actsData } = await supabase.from('onboarding_activities').insert(acts).select()
+        const { data: actsData } = await supabaseClient.from('onboarding_activities').insert(acts).select()
         newOb.activities = actsData || []
       }
     } else {
@@ -806,7 +806,7 @@ async function createOnboardingForEmployee(empId, startDate, site, templateId) {
         { onboarding_id: newOb.id, name: 'Lectura de políticas', category: 'Compliance', responsible: 'RRHH', order_index: 2, done: false },
         { onboarding_id: newOb.id, name: 'Reunión con supervisor', category: 'General', responsible: 'Supervisor', order_index: 3, done: false },
       ]
-      const { data: actsData } = await supabase.from('onboarding_activities').insert(defaultActs).select()
+      const { data: actsData } = await supabaseClient.from('onboarding_activities').insert(defaultActs).select()
       newOb.activities = actsData || []
     }
   } else {
@@ -821,8 +821,8 @@ async function createOnboardingForEmployee(empId, startDate, site, templateId) {
 
 async function deleteEmployee(id) {
   if(!confirm('¿Eliminar empleado y todos sus datos?')) return
-  if (supabase) {
-    await supabase.from('employees').delete().eq('id', id)
+  if (supabaseClient) {
+    await supabaseClient.from('employees').delete().eq('id', id)
   }
   S.employees = S.employees.filter(e=>e.id!==id)
   S.onboardings = S.onboardings.filter(o=>o.employee_id!==id)
@@ -1017,8 +1017,8 @@ async function toggleOBActivity(actId, obId, newDone) {
   ob.progress = total ? Math.round(done/total*100) : 0
   if (ob.progress === 100) ob.status = 'Completado'
 
-  if (supabase) {
-    await supabase.from('onboarding_activities').update({done: newDone, done_date: act.done_date}).eq('id', actId)
+  if (supabaseClient) {
+    await supabaseClient.from('onboarding_activities').update({done: newDone, done_date: act.done_date}).eq('id', actId)
     // El trigger en Supabase actualiza el progreso del onboarding automáticamente
   }
   renderOnboarding(); updateCounters()
@@ -1054,8 +1054,8 @@ async function saveEditActivity(actId, obId) {
   }
   if (!updates.name) { showToast('El nombre es obligatorio','err'); return }
   Object.assign(act, updates)
-  if (supabase) {
-    await supabase.from('onboarding_activities').update(updates).eq('id', actId)
+  if (supabaseClient) {
+    await supabaseClient.from('onboarding_activities').update(updates).eq('id', actId)
   }
   closeModal('edit-ob-act-modal')
   renderOnboarding()
@@ -1066,8 +1066,8 @@ async function deleteActivity(actId, obId) {
   if (!confirm('¿Eliminar esta actividad?')) return
   const ob = S.onboardings.find(x=>x.id===obId)
   if (ob) ob.activities = ob.activities.filter(a=>a.id!==actId)
-  if (supabase) {
-    await supabase.from('onboarding_activities').delete().eq('id', actId)
+  if (supabaseClient) {
+    await supabaseClient.from('onboarding_activities').delete().eq('id', actId)
   }
   renderOnboarding(); updateCounters()
 }
@@ -1114,8 +1114,8 @@ async function confirmAddActivity(obId, tempId) {
     onboarding_id: obId, name, category: cat, responsible: resp,
     due_date: due, done: false, order_index: ob.activities.length
   }
-  if (supabase) {
-    const { data, error } = await supabase.from('onboarding_activities').insert([newAct]).select().single()
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient.from('onboarding_activities').insert([newAct]).select().single()
     if (error) { showToast('Error: '+error.message, 'err'); return }
     ob.activities.push(data)
   } else {
@@ -1153,8 +1153,8 @@ async function saveNewActivity(obId) {
     notes: document.getElementById('ea-notes').value,
     done: false, order_index: ob.activities.length
   }
-  if (supabase) {
-    const { data, error } = await supabase.from('onboarding_activities').insert([newAct]).select().single()
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient.from('onboarding_activities').insert([newAct]).select().single()
     if (error) { showToast('Error: '+error.message,'err'); return }
     ob.activities.push(data)
   } else {
@@ -1171,10 +1171,10 @@ async function markOBComplete(obId) {
   if (!ob) return
   ob.status = 'Completado'; ob.progress = 100
   ob.activities.forEach(a => a.done = true)
-  if (supabase) {
-    await supabase.from('onboardings').update({status:'Completado', progress:100}).eq('id', obId)
+  if (supabaseClient) {
+    await supabaseClient.from('onboardings').update({status:'Completado', progress:100}).eq('id', obId)
     if (ob.activities.length) {
-      await supabase.from('onboarding_activities').update({done:true, done_date: new Date().toISOString().split('T')[0]}).eq('onboarding_id', obId)
+      await supabaseClient.from('onboarding_activities').update({done:true, done_date: new Date().toISOString().split('T')[0]}).eq('onboarding_id', obId)
     }
   }
   renderOnboarding(); updateCounters()
@@ -1206,8 +1206,8 @@ async function updateOnboarding(obId) {
     notes: document.getElementById('ob-notes').value,
   }
   Object.assign(ob, updates)
-  if (supabase) {
-    await supabase.from('onboardings').update(updates).eq('id', obId)
+  if (supabaseClient) {
+    await supabaseClient.from('onboardings').update(updates).eq('id', obId)
   }
   closeModal('new-ob-modal')
   document.getElementById('ob-save-btn').textContent = 'Crear onboarding'
@@ -1219,7 +1219,7 @@ async function updateOnboarding(obId) {
 async function deleteOB(id) {
   if(!confirm('¿Eliminar onboarding y todas sus actividades?')) return
   S.onboardings = S.onboardings.filter(o=>o.id!==id)
-  if (supabase) await supabase.from('onboardings').delete().eq('id', id)
+  if (supabaseClient) await supabaseClient.from('onboardings').delete().eq('id', id)
   renderOnboarding(); updateCounters()
   showToast('Onboarding eliminado','ok')
 }
@@ -1271,10 +1271,10 @@ async function saveTemplate() {
   const actsText = document.getElementById('tmpl-acts').value
   const acts = actsText.split('\n').map(s=>s.trim()).filter(Boolean).map((a,i)=>({name:a, category:'General', day_offset:0, order_index:i}))
   const tmpl = { name, area: document.getElementById('tmpl-area').value, is_default: false }
-  if (supabase) {
-    const { data } = await supabase.from('onboarding_templates').insert([tmpl]).select().single()
+  if (supabaseClient) {
+    const { data } = await supabaseClient.from('onboarding_templates').insert([tmpl]).select().single()
     if (acts.length) {
-      await supabase.from('onboarding_template_activities').insert(acts.map(a=>({...a, template_id: data.id})))
+      await supabaseClient.from('onboarding_template_activities').insert(acts.map(a=>({...a, template_id: data.id})))
     }
     S.templates.push({ ...data, onboarding_template_activities: acts })
   } else {
@@ -1288,7 +1288,7 @@ async function saveTemplate() {
 async function deleteTemplate(id) {
   if (!confirm('¿Eliminar template?')) return
   S.templates = S.templates.filter(t=>t.id!==id)
-  if (supabase) await supabase.from('onboarding_templates').delete().eq('id', id)
+  if (supabaseClient) await supabaseClient.from('onboarding_templates').delete().eq('id', id)
   renderTemplatesList(); populateTemplateSelects()
 }
 
@@ -1304,8 +1304,8 @@ function applyTemplateToOB(obId) {
     onboarding_id: obId, name: a.name, category: a.category||'General',
     responsible: a.responsible||'', done: false, order_index: ob.activities.length+i
   }))
-  if (supabase) {
-    supabase.from('onboarding_activities').insert(acts).select().then(({data})=>{
+  if (supabaseClient) {
+    supabaseClient.from('onboarding_activities').insert(acts).select().then(({data})=>{
       ob.activities.push(...(data||[]))
       renderOnboarding()
     })
@@ -1361,8 +1361,8 @@ async function saveSurvey() {
     q6: document.getElementById('sv-q6').value,
     notes: document.getElementById('sv-notes').value,
   }
-  if (supabase) {
-    const { data, error } = await supabase.from('surveys').insert([sv]).select().single()
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient.from('surveys').insert([sv]).select().single()
     if (error) { showToast('Error: '+error.message,'err'); return }
     S.surveys.unshift(data)
   } else {
@@ -1377,7 +1377,7 @@ async function saveSurvey() {
 async function deleteSv(id) {
   if(!confirm('¿Eliminar encuesta?')) return
   S.surveys = S.surveys.filter(s=>s.id!==id)
-  if (supabase) await supabase.from('surveys').delete().eq('id', id)
+  if (supabaseClient) await supabaseClient.from('surveys').delete().eq('id', id)
   filterSurveys(); updateCounters()
 }
 
@@ -1411,8 +1411,8 @@ async function saveRM() {
   const name = document.getElementById('rm-name').value.trim()
   if (!name) { showToast('Nombre obligatorio','err'); return }
   const rm = { name, area: document.getElementById('rm-area').value, description: document.getElementById('rm-desc').value, phases: [] }
-  if (supabase) {
-    const { data } = await supabase.from('roadmaps').insert([rm]).select().single()
+  if (supabaseClient) {
+    const { data } = await supabaseClient.from('roadmaps').insert([rm]).select().single()
     S.roadmaps.push(data)
   } else {
     S.roadmaps.push({ ...rm, id: 'rm-'+Date.now() })
@@ -1425,7 +1425,7 @@ async function saveRM() {
 async function deleteRM(id) {
   if (!confirm('¿Eliminar roadmap?')) return
   S.roadmaps = S.roadmaps.filter(r=>r.id!==id)
-  if (supabase) await supabase.from('roadmaps').delete().eq('id', id)
+  if (supabaseClient) await supabaseClient.from('roadmaps').delete().eq('id', id)
   renderRoadmaps()
 }
 
@@ -1459,8 +1459,8 @@ async function savePlan() {
   const rid = document.getElementById('ap-rm').value
   if (!eid||!rid) { showToast('Selecciona empleado y roadmap','err'); return }
   const plan = { employee_id: eid, roadmap_id: rid, status: 'En curso', priority: document.getElementById('ap-pri').value, progress: 0, start_date: document.getElementById('ap-start').value, end_date: document.getElementById('ap-end').value }
-  if (supabase) {
-    const { data } = await supabase.from('plans').insert([plan]).select('*, employees(name,lastname), roadmaps(name)').single()
+  if (supabaseClient) {
+    const { data } = await supabaseClient.from('plans').insert([plan]).select('*, employees(name,lastname), roadmaps(name)').single()
     S.plans.push(data)
   } else {
     S.plans.push({ ...plan, id: 'p-'+Date.now(), employees: S.employees.find(e=>e.id===eid), roadmaps: S.roadmaps.find(r=>r.id===rid) })
